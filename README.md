@@ -13,6 +13,7 @@ A beautiful, responsive "Coming Soon" landing page for HoodRevenge with countdow
 ## Preview
 
 The page includes:
+
 - Countdown to New Year's Eve 2025
 - Email collection for launch notifications
 - Social media links

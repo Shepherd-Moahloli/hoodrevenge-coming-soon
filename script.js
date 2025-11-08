@@ -1,6 +1,6 @@
 // Simple countdown + subscribe behavior
 // Edit targetDate to the launch date/time you want (UTC)
-const targetDate = new Date("2025-12-31T00:00:00Z"); // New Year's Eve 2025
+const targetDate = new Date("2025-12-31T23:59:59Z"); // December 31st, 2025 - New Year's Eve
 
 // update year in footer
 document.getElementById("year").textContent = new Date().getFullYear();
