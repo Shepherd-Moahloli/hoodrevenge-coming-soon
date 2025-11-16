@@ -112,7 +112,7 @@ h1 {
 .countdown {
   display: flex;
   gap: 20px;
-  margin: 24px auto;
+  margin: 60px auto;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
@@ -133,13 +133,23 @@ h1 {
 .time span {
   display: block;
   font-weight: 400;
-  font-size: 32px;
+  font-size: 48px;
   color: #1f2937;
-  line-height: 1.4;
-  transform: scale(1.2, 5.8);
+  line-height: 0.6;
+  /* Add vertical stretch for height effect */
+  transform: scaleY(2.5);
   display: inline-block;
   margin-bottom: 50px;
   font-family: "Times New Roman", Times, serif;
+  /* Enhanced text rendering for clarity */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Create stretch effect without blurriness */
+  letter-spacing: 2px;
+  font-stretch: expanded;
+  /* Transform origin for better scaling */
+  transform-origin: center bottom;
 }
 .time small {
   display: block;
@@ -162,6 +172,7 @@ h1 {
   justify-content: center;
   max-width: 400px;
 }
+
 .subscribe input[type="email"] {
   flex: 1 1 260px;
   min-width: 0;
@@ -172,9 +183,11 @@ h1 {
   color: inherit;
   outline: none;
 }
+
 .subscribe input::placeholder {
   color: rgba(107, 114, 128, 0.7);
 }
+
 .btn {
   background: linear-gradient(90deg, #1f2937, #111827);
   color: white;
@@ -184,6 +197,7 @@ h1 {
   cursor: pointer;
   font-weight: 600;
 }
+
 .btn:active {
   transform: translateY(1px);
 }
@@ -196,6 +210,7 @@ h1 {
   font-size: 13px;
   text-align: center;
 }
+
 a {
   color: inherit;
   text-decoration: underline;
@@ -206,6 +221,7 @@ a {
   margin: 16px auto 10px auto;
   justify-content: center;
 }
+
 .icon {
   width: 40px;
   height: 40px;
@@ -217,6 +233,7 @@ a {
   color: #6b7280;
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
+
 .icon svg {
   width: 18px;
   height: 18px;
