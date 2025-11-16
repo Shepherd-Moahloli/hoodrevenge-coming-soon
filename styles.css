@@ -260,17 +260,55 @@ a {
 @media (max-width: 560px) {
   .countdown {
     gap: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    max-width: 240px;
+    margin: 60px auto;
+    height: 180px;
   }
+
+  /* Days and Hours on first row */
+  .countdown .time:nth-child(1) {
+    /* Days */
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .countdown .time:nth-child(2) {
+    /* Hours */
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* Mins and Secs on second row */
+  .countdown .time:nth-child(3) {
+    /* Mins */
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .countdown .time:nth-child(4) {
+    /* Secs */
+    grid-column: 2;
+    grid-row: 2;
+  }
+
   .time {
     min-width: 70px;
     padding: 16px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .time span {
     font-size: 24px;
-    transform: scale(1.15, 1.65);
+    transform: scale(1.15, 2.5);
+    margin: 0;
   }
   .time small {
     font-size: 12px;
+    margin-top: 20px !important;
   }
   .card {
     padding: 20px;
@@ -281,5 +319,8 @@ a {
   }
   .video-container::before {
     font-size: 24px;
+  }
+  .subscribe {
+    width: 200px;
   }
 }
