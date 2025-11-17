@@ -182,6 +182,22 @@ h1 {
   border: 1px solid rgba(0, 0, 0, 0.1);
   color: inherit;
   outline: none;
+  transition: all 0.3s ease;
+}
+
+.subscribe input[type="email"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.subscribe input[type="email"].error {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.subscribe input[type="email"].success {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
 .subscribe input::placeholder {
@@ -196,10 +212,57 @@ h1 {
   border: 0;
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn:active {
   transform: translateY(1px);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Form message styles */
+.form-message {
+  margin: 8px auto 0 auto;
+  text-align: center;
+  font-size: 14px;
+  min-height: 20px;
+  max-width: 400px;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.form-message.error {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin: 15px auto 0 auto;
+  opacity: 1;
+  transform: translateY(0);
+  font-weight: 500;
+}
+
+.form-message.success {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin: 15px auto 0 auto;
+  opacity: 1;
+  transform: translateY(0);
+  font-weight: 500;
 }
 
 /* Footer & misc */
