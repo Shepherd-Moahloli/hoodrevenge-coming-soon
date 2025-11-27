@@ -1,0 +1,26 @@
+{
+  "name": "01.-coming-soon",
+  "version": "1.0.0",
+  "description": "A beautiful, responsive \"Coming Soon\" landing page for HoodRevenge with countdown timer and email collection.",
+  "main": "script.js",
+  "scripts": {
+    "start": "live-server --port=8080 --open=/",
+    "dev": "live-server --port=3000 --open=/",
+    "live": "live-server --host=0.0.0.0 --port=8080 --open=/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shepherd-Moahloli/hoodrevenge-coming-soon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Shepherd-Moahloli/hoodrevenge-coming-soon/issues"
+  },
+  "homepage": "https://github.com/Shepherd-Moahloli/hoodrevenge-coming-soon#readme",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

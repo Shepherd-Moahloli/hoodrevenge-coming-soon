@@ -118,51 +118,34 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
-// Test function to verify form message element exists
-function testFormMessage() {
-  const messageDiv = document.getElementById("form-message");
-  if (messageDiv) {
-    console.log("✅ Form message element found");
-    messageDiv.textContent = "Test message";
-    messageDiv.className = "form-message error";
-    setTimeout(() => {
-      messageDiv.textContent = "";
-      messageDiv.className = "form-message";
-    }, 2000);
-  } else {
-    console.error("❌ Form message element NOT found");
-  }
-}
-
-// Run test when page loads
-document.addEventListener("DOMContentLoaded", testFormMessage);
-
 // Subscribe form: Uses Formspree for reliable email delivery with enhanced error handling
 function subscribe(e) {
+  alert("🚀 Form submitted!"); // Simple test to see if function is called
+  console.log("🚀 Subscribe function called!");
   e.preventDefault();
+
   const form = document.getElementById("subscribe-form");
   const emailInput = document.getElementById("email");
   const submitBtn = form.querySelector(".btn");
   const messageDiv = document.getElementById("form-message");
   const email = emailInput.value.trim();
 
+  console.log("📧 Email value:", email);
+  console.log("📦 Message div exists:", !!messageDiv);
+
+  // Simple test - force show error message
+  if (messageDiv) {
+    messageDiv.innerHTML =
+      '<span style="color: red; background: rgba(220,38,38,0.1); border: 1px solid red; padding: 10px; border-radius: 5px; display: block;">❌ TEST ERROR MESSAGE</span>';
+  }
+
   // Clear any existing error states
   emailInput.classList.remove("error");
   emailInput.style.borderColor = "";
 
-  // Debug: Check if messageDiv exists
-  console.log("Message div found:", !!messageDiv);
-
-  if (messageDiv) {
-    messageDiv.textContent = "";
-    messageDiv.className = "form-message";
-  } else {
-    console.error("form-message element not found!");
-  }
-
-  // Validate email format
+  // Validate email format - show RED error message under form if invalid
   if (!email) {
-    console.log("Email is empty, showing error");
+    console.log("❌ Email is empty - showing error");
     showError(
       emailInput,
       submitBtn,
@@ -172,10 +155,10 @@ function subscribe(e) {
     return;
   }
 
-  // Enhanced email validation
+  // Enhanced email validation - show RED error message under form for wrong format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    console.log("Email format is invalid:", email, "showing error");
+    console.log("❌ Email format invalid - showing error");
     showError(
       emailInput,
       submitBtn,
@@ -185,18 +168,13 @@ function subscribe(e) {
     return;
   }
 
-  console.log("Email validation passed:", email);
+  console.log("✅ Email validation passed - proceeding with submission");
 
-  // Show loading state
+  // If email is valid, proceed with submission
   const originalText = submitBtn.textContent;
   submitBtn.textContent = "Sending...";
   submitBtn.disabled = true;
   emailInput.disabled = true;
-
-  if (messageDiv) {
-    messageDiv.textContent = "";
-    messageDiv.className = "form-message";
-  }
 
   // Send to Formspree
   fetch(form.action, {
@@ -254,7 +232,12 @@ function showError(
   if (messageDiv) {
     messageDiv.textContent = message;
     messageDiv.className = "form-message error";
+    messageDiv.style.display = "block";
+    messageDiv.style.opacity = "1";
+    messageDiv.style.transform = "translateY(0)";
     console.log("Error message set:", message);
+    console.log("Message div classes:", messageDiv.className);
+    console.log("Message div text:", messageDiv.textContent);
   } else {
     console.error("Message div not found!");
     // Fallback: show in placeholder
@@ -279,6 +262,8 @@ function showError(
     if (messageDiv) {
       messageDiv.textContent = "";
       messageDiv.className = "form-message";
+      messageDiv.style.opacity = "";
+      messageDiv.style.transform = "";
     } else {
       emailInput.placeholder = "Enter your email to get updates";
     }
@@ -292,8 +277,13 @@ function showSuccess(emailInput, submitBtn, messageDiv, originalText) {
   emailInput.style.boxShadow = "0 0 0 3px rgba(16, 185, 129, 0.1)";
 
   // Show success message below form
-  messageDiv.textContent = "Thanks! You're subscribed! 🎉";
-  messageDiv.className = "form-message success";
+  if (messageDiv) {
+    messageDiv.textContent = "Thanks! You're subscribed! 🎉";
+    messageDiv.className = "form-message success";
+    messageDiv.style.display = "block";
+    messageDiv.style.opacity = "1";
+    messageDiv.style.transform = "translateY(0)";
+  }
 
   submitBtn.textContent = "✓ Subscribed";
   submitBtn.style.background = "#10b981";
@@ -306,7 +296,11 @@ function showSuccess(emailInput, submitBtn, messageDiv, originalText) {
     submitBtn.style.background = "";
     submitBtn.disabled = false;
     emailInput.disabled = false;
-    messageDiv.textContent = "";
-    messageDiv.className = "form-message";
+    if (messageDiv) {
+      messageDiv.textContent = "";
+      messageDiv.className = "form-message";
+      messageDiv.style.opacity = "";
+      messageDiv.style.transform = "";
+    }
   }, 5000);
 }
