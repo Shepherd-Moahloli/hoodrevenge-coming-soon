@@ -18,10 +18,22 @@
 
         <section class="hero">
           <div class="video-container">
-            <video autoplay muted loop playsinline>
+            <video
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              poster="VIDEO/poster.jpg"
+            >
+              <source src="VIDEO/IMG_3436.webm" type="video/webm" />
+              <source src="VIDEO/IMG_3436.mp4" type="video/mp4" />
               <source src="VIDEO/IMG_3436.mov" type="video/quicktime" />
               Your browser does not support the video tag.
             </video>
+            <div class="video-overlay" id="video-loading">
+              <div class="loading-spinner"></div>
+            </div>
           </div>
 
           <div class="countdown" aria-hidden="false">
@@ -57,18 +69,7 @@
               type="email"
               placeholder="Enter your email to get updates"
               required
-            />
-            <input
-              type="hidden"
-              name="_subject"
-              value="HoodRevenge Coming Soon - New Subscriber"
-            />
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="hidden" name="_template" value="table" />
-            <input
-              type="hidden"
-              name="source"
-              value="HoodRevenge Coming Soon Page"
+              autocomplete="email"
             />
             <button type="submit" class="btn">Notify Me</button>
           </form>
