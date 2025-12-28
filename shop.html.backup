@@ -214,4 +214,4 @@
 
 <script>
 // Debug version - let's see what's happening with prices
-
+document.addEventListener('DOMContentLoaded', function() {

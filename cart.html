@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cart - HoodRevenge</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/cart.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="logo">
+          <img
+            src="images/hood-logo.png"
+            alt="HoodRevenge Logo"
+            style="height: 100px"
+          />
+        </div>
+        <ul class="nav-menu">
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li>
+            <a href="cart.html" class="cart-link active"
+              >Cart (<span id="cart-count">0</span>)</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Cart Header -->
+    <section class="cart-header">
+      <div class="container">
+        <h1>Your Cart</h1>
+        <p>Review your items before checkout</p>
+      </div>
+    </section>
+
+    <!-- Cart Content -->
+    <section class="cart-content">
+      <div class="container">
+        <div class="cart-layout">
+          <!-- Cart Items -->
+          <div class="cart-items">
+            <div id="empty-cart" class="empty-cart" style="display: block">
+              <h2>Your cart is empty</h2>
+              <p>Add some streetwear essentials to get started</p>
+              <a href="shop.html" class="continue-shopping"
+                >Continue Shopping</a
+              >
+            </div>
+
+            <div id="cart-list" class="cart-list" style="display: none">
+              <!-- Cart items will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Cart Summary -->
+          <div class="cart-summary">
+            <h3>Order Summary</h3>
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span id="subtotal">R0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Shipping:</span>
+              <span id="shipping">Free</span>
+            </div>
+            <div class="summary-row">
+              <span>Tax (15% VAT):</span>
+              <span id="tax">R0.00</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total:</span>
+              <span id="total">R0.00</span>
+            </div>
+            <button class="checkout-btn" id="checkout-btn" disabled>
+              Proceed to Checkout
+            </button>
+            <a href="shop.html" class="continue-link">Continue Shopping</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 HoodRevenge. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Cart Display Manager with Size Selection
+      document.addEventListener("DOMContentLoaded", function () {
+        // Logo scroll effect for cart page
+        const navbar = document.querySelector(".navbar");
+        const logo = document.querySelector(".logo img");
+
+        // Set initial logo to black since cart page has white background
+        if (logo) {
+          logo.src = "images/hood-logo-black.png";
+        }
+
+        // Add scroll effect
+        window.addEventListener("scroll", function () {
+          if (window.scrollY > 100) {
+            navbar.classList.add("scrolled");
+            if (logo) {
+              logo.src = "images/hood-logo-black.png";
+            }
+          } else {
+            navbar.classList.remove("scrolled");
+            if (logo) {
+              logo.src = "images/hood-logo-black.png";
+            }
+          }
+        });
+
+        displayCart();
+
+        function displayCart() {
+          console.log("Loading cart...");
+
+          // Get cart from localStorage
+          let cart = JSON.parse(
+            localStorage.getItem("hoodrevenge-cart") || "[]"
+          );
+          console.log("Cart data:", cart);
+
+          // Fix null prices and add default sizes for existing items
+          cart = cart.map((item) => ({
+            ...item,
+            price: item.price || 650,
+            size: item.size || "M", // Add default size if missing
+          }));
+
+          // Save the fixed cart back
+          localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+
+          // Update cart count
+          const count = cart.reduce((total, item) => total + item.quantity, 0);
+          document.getElementById("cart-count").textContent = count;
+
+          const emptyCart = document.getElementById("empty-cart");
+          const cartList = document.getElementById("cart-list");
+
+          if (cart.length === 0) {
+            emptyCart.style.display = "block";
+            cartList.style.display = "none";
+            document.getElementById("checkout-btn").disabled = true;
+          } else {
+            emptyCart.style.display = "none";
+            cartList.style.display = "block";
+            document.getElementById("checkout-btn").disabled = false;
+
+            // Render cart items with size selection
+            cartList.innerHTML = cart
+              .map((item) => {
+                const price = item.price || 650; // Fallback price in Rands
+                return `
+                <div class="cart-item" data-id="${item.id}">
+                  <img src="${item.image}" alt="${
+                  item.name
+                }" class="item-image">
+                  <div class="item-details">
+                    <h3>${item.name}</h3>
+                    <p>Premium South African Streetwear</p>
+                    <div class="item-price">R${price.toFixed(2)}</div>
+                    
+                    <div class="size-selection">
+                      <label for="size-${item.id}">Size:</label>
+                      <select class="size-dropdown" id="size-${
+                        item.id
+                      }" onchange="updateSize('${item.id}', this.value)">
+                        <option value="S" ${
+                          item.size === "S" ? "selected" : ""
+                        }>S</option>
+                        <option value="M" ${
+                          item.size === "M" ? "selected" : ""
+                        }>M</option>
+                        <option value="L" ${
+                          item.size === "L" ? "selected" : ""
+                        }>L</option>
+                        <option value="XL" ${
+                          item.size === "XL" ? "selected" : ""
+                        }>XL</option>
+                      </select>
+                    </div>
+                    
+                    <div class="quantity-controls">
+                      <button class="quantity-btn minus" onclick="updateQuantity('${
+                        item.id
+                      }', ${item.quantity - 1})">-</button>
+                      <span class="quantity-display">${item.quantity}</span>
+                      <button class="quantity-btn plus" onclick="updateQuantity('${
+                        item.id
+                      }', ${item.quantity + 1})">+</button>
+                    </div>
+                    <button class="remove-item" onclick="removeItem('${
+                      item.id
+                    }')">Remove</button>
+                  </div>
+                  <div class="item-actions">
+                    <div class="item-total">R${(price * item.quantity).toFixed(
+                      2
+                    )}</div>
+                  </div>
+                </div>
+              `;
+              })
+              .join("");
+          }
+
+          // Update totals in Rands
+          updateTotals(cart);
+        }
+
+        function updateTotals(cart) {
+          const subtotal = cart.reduce((total, item) => {
+            const price = item.price || 650;
+            return total + price * item.quantity;
+          }, 0);
+          const vat = subtotal * 0.15; // 15% VAT for South Africa
+          const total = subtotal + vat;
+
+          document.getElementById(
+            "subtotal"
+          ).textContent = `R${subtotal.toFixed(2)}`;
+          document.getElementById("tax").textContent = `R${vat.toFixed(2)}`;
+          document.getElementById("total").textContent = `R${total.toFixed(2)}`;
+        }
+
+        // Global function to update size
+        window.updateSize = function (productId, newSize) {
+          let cart = JSON.parse(
+            localStorage.getItem("hoodrevenge-cart") || "[]"
+          );
+
+          const item = cart.find((item) => item.id === productId);
+          if (item) {
+            item.size = newSize;
+            localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+            displayCart();
+
+            // Show size update notification
+            showSizeNotification(item.name, newSize);
+          }
+        };
+
+        function showSizeNotification(productName, newSize) {
+          const notification = document.createElement("div");
+          notification.innerHTML = `<strong>${productName}</strong> size updated to ${newSize}`;
+          notification.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: #2c2c2c;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            z-index: 10000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+          `;
+
+          document.body.appendChild(notification);
+          setTimeout(
+            () => (notification.style.transform = "translateX(0)"),
+            100
+          );
+          setTimeout(() => {
+            notification.style.transform = "translateX(400px)";
+            setTimeout(() => document.body.removeChild(notification), 300);
+          }, 2000);
+        }
+
+        // Global functions for cart operations
+        window.updateQuantity = function (productId, newQuantity) {
+          let cart = JSON.parse(
+            localStorage.getItem("hoodrevenge-cart") || "[]"
+          );
+
+          if (newQuantity <= 0) {
+            removeItem(productId);
+            return;
+          }
+
+          const item = cart.find((item) => item.id === productId);
+          if (item) {
+            item.quantity = newQuantity;
+            item.price = item.price || 650; // Ensure price is set in Rands
+            localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+            displayCart();
+          }
+        };
+
+        window.removeItem = function (productId) {
+          let cart = JSON.parse(
+            localStorage.getItem("hoodrevenge-cart") || "[]"
+          );
+          cart = cart.filter((item) => item.id !== productId);
+          localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+          displayCart();
+        };
+
+        // Clear cart function for debugging
+        window.clearCart = function () {
+          localStorage.removeItem("hoodrevenge-cart");
+          displayCart();
+        };
+
+        // Checkout button
+        document
+          .getElementById("checkout-btn")
+          .addEventListener("click", function () {
+            window.location.href = "checkout.html";
+          });
+      });
+    </script>
+  </body>
+</html>

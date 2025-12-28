@@ -52,7 +52,7 @@ body {
 .logo img {
   height: 80px;
   width: auto;
-  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+
   transition: filter 0.3s ease;
 }
 
@@ -406,4 +406,24 @@ body {
   .logo img {
     height: 60px;
   }
+}
+
+/* Zoom Overlay Styles */
+.zoom-overlay {
+  position: fixed;
+  width: 200px;
+  height: 200px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1000;
+  background-repeat: no-repeat;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  transform: translate(-50%, -50%);
+}
+
+.zoom-overlay.active {
+  opacity: 1;
 }
