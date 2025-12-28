@@ -1,0 +1,409 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  line-height: 1.6;
+  color: #2c2c2c;
+  background: #ffffff;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Fixed Navigation */
+.navbar {
+  background: transparent !important;
+  color: #ffffff;
+  padding: 1.5rem 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 999;
+  box-shadow: none;
+  border-bottom: none;
+  transition: all 0.5s ease;
+}
+
+.navbar.scrolled {
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 0.8rem 0;
+  height: 115px;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo img {
+  height: 80px;
+  width: auto;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+  transition: filter 0.3s ease;
+}
+
+/* Remove shadow when navbar is scrolled (black logo) */
+.navbar.scrolled .logo img {
+  filter: none;
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-menu li {
+  background: none !important;
+}
+
+.nav-menu a {
+  background: none !important;
+  color: #ffffff !important;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  font-size: 1rem;
+}
+
+.nav-menu a:hover {
+  color: #f0f0f0 !important;
+  transform: translateY(-1px);
+}
+
+/* Scrolled state navigation links */
+.navbar.scrolled .nav-menu a {
+  color: #2c2c2c !important;
+  text-shadow: none;
+}
+
+.navbar.scrolled .nav-menu a:hover {
+  color: #fff !important;
+}
+
+.cart-link {
+  background: transparent !important;
+  color: #ffffff !important;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.cart-link:hover {
+  background: #1a1a1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  transform: translateY(-1px);
+  color: #ffffff;
+}
+
+/* Scrolled state cart link */
+.navbar.scrolled .cart-link {
+  background: transparent !important;
+  color: #2c2c2c !important;
+  border: 1px solid rgba(44, 44, 44, 0.3) !important;
+  text-shadow: none;
+}
+
+.navbar.scrolled .cart-link:hover {
+  background: #1a1a1a !important;
+  border: 1px solid rgba(44, 44, 44, 0.6) !important;
+  color: #ffffff !important;
+}
+
+/* Hero Section with Video */
+.hero-main {
+  height: 700px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  color: #ffffff;
+}
+
+.hero-content h1 {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.hero-content p {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: #ffffff;
+}
+
+.cta-btn {
+  background: #ffffff;
+  color: #2c2c2c;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cta-btn:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Products Section */
+.products {
+  padding: 4rem 0;
+}
+
+.products h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #2c2c2c;
+  font-weight: 300;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 100px 0;
+}
+
+.product-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.5rem;
+
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 0.5px solid #2c2c2c;
+  position: relative; /* Important for zoom overlay positioning */
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.product-img {
+  width: 100%;
+  height: 250px;
+  border-radius: 15px;
+  object-fit: cover;
+
+  cursor: crosshair; /* Show crosshair cursor for zoom indication */
+  transition: none;
+}
+
+.product-info {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.product-info h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: #2c2c2c;
+  font-weight: 500;
+}
+
+.price {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c2c2c;
+  margin-bottom: 1rem;
+}
+
+.add-to-cart {
+  color: #2c2c2c;
+  padding: 0.8rem 1.5rem;
+  border: solid 0.5px #2c2c2c;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 60%;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  background: none;
+}
+
+.add-to-cart:hover {
+  background: #1a1a1a;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Footer */
+.footer {
+  background: #ffffff;
+  color: #2c2c2c;
+  padding: 2rem 0;
+  text-align: center;
+  border-top: 0.5px solid #2c2c2c;
+}
+
+.social-links {
+  margin-top: 1rem;
+}
+
+.social-links a {
+  margin: 0 1rem;
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.social-links a:hover {
+  color: #2c2c2c;
+}
+
+/* Add this at the end of your CSS file, before the mobile responsive section: */
+
+/* Make all text uppercase */
+.nav-menu a,
+.hero-content h1,
+.hero-content p,
+.cta-btn,
+.products h2,
+.product-info h3,
+.add-to-cart,
+.footer p,
+.social-links a {
+  text-transform: uppercase;
+}
+
+/* Optional: Add letter spacing for better readability */
+.nav-menu a {
+  letter-spacing: 1px;
+}
+
+.hero-content h1 {
+  letter-spacing: 2px;
+}
+
+.hero-content p {
+  letter-spacing: 1px;
+}
+
+.cta-btn {
+  letter-spacing: 1.5px;
+}
+
+.products h2 {
+  letter-spacing: 3px;
+}
+
+.product-info h3 {
+  letter-spacing: 1px;
+}
+
+.add-to-cart {
+  letter-spacing: 1px;
+}
+
+/* Add this CSS for the zoom overlay effect: */
+
+.zoom-overlay {
+  position: fixed; /* Changed to fixed for better positioning */
+  width: 200px;
+  height: 200px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1000;
+  background-repeat: no-repeat;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  transform: translate(-50%, -50%); /* Center the zoom circle */
+}
+
+.zoom-overlay.active {
+  opacity: 1;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .hero-main {
+    height: 50vh;
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-content p {
+    font-size: 1.2rem;
+  }
+
+  .nav-menu {
+    gap: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-card {
+    margin: 0 1rem;
+  }
+
+  .logo img {
+    height: 60px;
+  }
+}

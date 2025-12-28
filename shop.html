@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HoodRevenge - Premium Streetwear</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="logo">
+          <img
+            src="images/hood-logo.png"
+            alt="HoodRevenge Logo"
+            style="height: 100px"
+          />
+        </div>
+        <ul class="nav-menu">
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li style="background: none">
+            <a href="cart.html" class="cart-link"
+              >Cart (<span id="cart-count">0</span>)</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-main" style="height: 800px; overflow: hidden">
+      <div class="video-container">
+        <video
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+          class="hero-video"
+        >
+          <source
+            src="video/Screen Recording 2025-12-27 at 10.12.17 PM.mov"
+            type="video/mp4"
+          />
+          <source
+            src="video/Screen Recording 2025-12-27 at 10.12.17 PM.mov"
+            type="video/quicktime"
+          />
+          Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay"></div>
+      </div>
+      <div class="hero-content">
+        <h1>SEASON 01</h1>
+        <p>STREETWEAR COLLECTION</p>
+        <button class="cta-btn" onclick="scrollToProducts()">Shop Now</button>
+      </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products" id="products-section">
+      <div class="container">
+        <h2>HOOD - SEASON 01</h2>
+        <div class="products-grid">
+          <!-- Product 1 -->
+          <div class="product-card">
+            <img
+              src="images/Free_T-Shirt_Mockup.jpg"
+              alt="Classic Hoodie"
+              class="product-img"
+            />
+            <div class="product-info">
+              <h3>Classic Hoodie</h3>
+              <p class="price">R650</p>
+              <button
+                class="add-to-cart"
+                data-id="1"
+                data-name="Classic Hoodie"
+                data-price="650"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+
+          <!-- Product 2 -->
+          <div class="product-card">
+            <img
+              src="images/Hoodie-Mockup-NEW.png"
+              alt="Logo T-Shirt"
+              class="product-img"
+            />
+            <div class="product-info">
+              <h3>Logo T-Shirt</h3>
+              <p class="price">R850</p>
+              <button
+                class="add-to-cart"
+                data-id="2"
+                data-name="Logo T-Shirt"
+                data-price="850"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+
+          <!-- Product 3 -->
+          <div class="product-card">
+            <img
+              src="images/Women_Sleevless_T-Shirt_Mockup_1.jpg"
+              alt="Street Jacket"
+              class="product-img"
+            />
+            <div class="product-info">
+              <h3>Street Jacket</h3>
+              <p class="price">R800</p>
+              <button
+                class="add-to-cart"
+                data-id="3"
+                data-name="Street Jacket"
+                data-price="800"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="products-grid">
+          <!-- Product 1 -->
+          <div class="product-card">
+            <img
+              src="images/Free_T-Shirt_Mockup.jpg"
+              alt="Classic Hoodie"
+              class="product-img"
+            />
+            <div class="product-info">
+              <h3>Classic Hoodie</h3>
+              <p class="price">R650</p>
+              <button
+                class="add-to-cart"
+                data-id="1"
+                data-name="Classic Hoodie"
+                data-price="650"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+
+          <!-- Product 2 -->
+          <div class="product-card">
+            <img
+              src="images/Hoodie-Mockup-NEW.png"
+              alt="Logo T-Shirt"
+              class="product-img"
+            />
+            <div class="product-info">
+              <h3>Logo T-Shirt</h3>
+              <p class="price">R850</p>
+              <button
+                class="add-to-cart"
+                data-id="2"
+                data-name="Logo T-Shirt"
+                data-price="850"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+
+          <!-- Product 3 -->
+          <div class="product-card">
+            <img
+              src="images/Women_Sleevless_T-Shirt_Mockup_1.jpg"
+              alt="Street Jacket"
+              class="product-img"
+            />
+            <div class="product-info">
+              <h3>Street Jacket</h3>
+              <p class="price">R800</p>
+              <button
+                class="add-to-cart"
+                data-id="3"
+                data-name="Street Jacket"
+                data-price="800"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 HoodRevenge. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/cart.js"></script>
+  </body>
+</html>
+<!-- Replace the hero section (lines 27-53) with: -->
