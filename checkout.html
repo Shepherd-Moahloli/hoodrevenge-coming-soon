@@ -10,6 +10,7 @@
     />
     <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/checkout.css" />
+    <link rel="stylesheet" href="css/cart.css" />
   </head>
   <body>
     <!-- Navigation - Same as other pages but starts with black logo -->
@@ -40,17 +41,19 @@
       <div class="container">
         <h1>Secure Checkout</h1>
         <div class="checkout-steps">
-          <div class="step active">
-            <span>1</span>
-            <p>Review Order</p>
-          </div>
           <div class="step">
-            <span>2</span>
-            <p>Payment</p>
+            <div class="step-number">1</div>
+            <div class="step-label">REVIEW ORDER</div>
           </div>
+
           <div class="step">
-            <span>3</span>
-            <p>Confirmation</p>
+            <div class="step-number">2</div>
+            <div class="step-label">PAYMENT</div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-label">CONFIRMATION</div>
           </div>
         </div>
       </div>
@@ -98,22 +101,25 @@
 
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="city">City *</label>
-                    <input type="text" id="city" name="city" required />
-                  </div>
-                  <div class="form-group">
                     <label for="province">Province *</label>
                     <select id="province" name="province" required>
                       <option value="">Select Province</option>
-                      <option value="WC">Western Cape</option>
-                      <option value="GP">Gauteng</option>
-                      <option value="KZN">KwaZulu-Natal</option>
-                      <option value="EC">Eastern Cape</option>
-                      <option value="FS">Free State</option>
-                      <option value="LP">Limpopo</option>
-                      <option value="MP">Mpumalanga</option>
-                      <option value="NW">North West</option>
-                      <option value="NC">Northern Cape</option>
+                      <option value="Western Cape">Western Cape</option>
+                      <option value="Gauteng">Gauteng</option>
+                      <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                      <option value="Eastern Cape">Eastern Cape</option>
+                      <option value="Free State">Free State</option>
+                      <option value="Limpopo">Limpopo</option>
+                      <option value="Mpumalanga">Mpumalanga</option>
+                      <option value="North West">North West</option>
+                      <option value="Northern Cape">Northern Cape</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="city">City *</label>
+                    <select id="city" name="city" required>
+                      <option value="">Select City</option>
+                      <!-- Will be populated when province is selected -->
                     </select>
                   </div>
                   <div class="form-group">
@@ -232,13 +238,26 @@
                 <div class="eft-info">
                   <h4>Bank Transfer Details</h4>
                   <p><strong>Bank:</strong> FNB</p>
-                  <p><strong>Account Name:</strong> HoodRevenge (Pty) Ltd</p>
-                  <p><strong>Account Number:</strong> 1234567890</p>
+                  <p><strong>Account Name:</strong> Gold Business Account</p>
+                  <p><strong>Account Number:</strong> 63111517786</p>
                   <p><strong>Branch Code:</strong> 250655</p>
                   <p>
                     <strong>Reference:</strong>
                     <span id="orderReference">HR-2025-001</span>
                   </p>
+                  <div class="eft-instructions">
+                    <p><strong>Instructions:</strong></p>
+                    <ul>
+                      <li>Use your order reference as the payment reference</li>
+                      <li>
+                        Please email proof of payment to
+                        orders@hoodrevenge.co.za
+                      </li>
+                      <li>
+                        Your order will be processed once payment is confirmed
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -280,6 +299,81 @@
             </div>
 
             <a href="cart.html" class="back-to-cart">← Back to Cart</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Payment Processing Section (Optional) -->
+    <section
+      class="checkout-section"
+      id="payment-processing"
+      style="display: none"
+    >
+      <div class="container">
+        <div style="text-align: center; padding: 4rem 0">
+          <h2>Processing Your Payment...</h2>
+          <p>Please wait while we process your order.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Order Confirmation Section -->
+    <section
+      class="checkout-section"
+      id="order-confirmation"
+      style="display: none"
+    >
+      <div class="confirmation-container">
+        <div class="confirmation-content">
+          <!-- Success Animation -->
+          <div class="success-icon">
+            <div class="checkmark">
+              <svg viewBox="0 0 52 52">
+                <circle
+                  class="checkmark-circle"
+                  cx="26"
+                  cy="26"
+                  r="25"
+                  fill="none"
+                />
+                <path
+                  class="checkmark-check"
+                  fill="none"
+                  d="m14.1,27.2l7.1,7.2 16.7-16.8"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Success Message -->
+          <h1 class="confirmation-title">Thank You!</h1>
+          <h2 class="confirmation-subtitle">Your order has been confirmed</h2>
+
+          <div class="confirmation-details">
+            <p class="confirmation-message">
+              <strong>Thank you for shopping with HoodRevenge!</strong>
+            </p>
+
+            <div class="confirmation-info">
+              <div class="info-item">
+                <span class="info-icon"></span>
+                <p>We've sent you a confirmation email with all the details</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="confirmation-actions">
+            <a href="shop.html" class="btn btn-primary">Continue Shopping</a>
+            <a href="contact.html" class="btn btn-outline">Contact Us</a>
+          </div>
+
+          <!-- Order Summary Preview -->
+          <div class="order-preview">
+            <h4>Order Summary</h4>
+            <div id="confirmation-order-items">
+              <!-- Will be populated by JavaScript -->
+            </div>
           </div>
         </div>
       </div>

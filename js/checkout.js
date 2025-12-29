@@ -1,4 +1,154 @@
 /* filepath: js/checkout.js */
+// Add this CSS for error styling at the top of the file
+const errorStyles = `
+  .form-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+  
+  .input-error {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+  }
+  
+  .form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+`;
+
+// Inject styles
+const styleSheet = document.createElement("style");
+styleSheet.textContent = errorStyles;
+document.head.appendChild(styleSheet);
+
+// South African Provinces and Cities data
+const SA_LOCATIONS = {
+  "Western Cape": [
+    "Cape Town",
+    "Stellenbosch",
+    "Paarl",
+    "George",
+    "Mossel Bay",
+    "Worcester",
+    "Hermanus",
+    "Knysna",
+    "Oudtshoorn",
+    "Caledon",
+    "Swellendam",
+    "Robertson",
+    "Vredenburg",
+    "Malmesbury",
+  ],
+  Gauteng: [
+    "Johannesburg",
+    "Pretoria",
+    "Soweto",
+    "Sandton",
+    "Randburg",
+    "Roodepoort",
+    "Benoni",
+    "Boksburg",
+    "Germiston",
+    "Kempton Park",
+    "Springs",
+    "Alberton",
+    "Edenvale",
+    "Midrand",
+    "Centurion",
+  ],
+  "KwaZulu-Natal": [
+    "Durban",
+    "Pietermaritzburg",
+    "Newcastle",
+    "Richards Bay",
+    "Ladysmith",
+    "Pinetown",
+    "Chatsworth",
+    "Umlazi",
+    "Port Shepstone",
+    "Margate",
+    "Empangeni",
+    "Vryheid",
+    "Dundee",
+    "Estcourt",
+  ],
+  "Eastern Cape": [
+    "Port Elizabeth",
+    "East London",
+    "Uitenhage",
+    "King William's Town",
+    "Mthatha",
+    "Grahamstown",
+    "Queenstown",
+    "Bhisho",
+    "Port Alfred",
+    "Somerset East",
+    "Cradock",
+    "Fort Beaufort",
+    "Alice",
+  ],
+  Limpopo: [
+    "Polokwane",
+    "Tzaneen",
+    "Phalaborwa",
+    "Musina",
+    "Thohoyandou",
+    "Giyani",
+    "Louis Trichardt",
+    "Mokopane",
+    "Bela-Bela",
+    "Hoedspruit",
+  ],
+  Mpumalanga: [
+    "Nelspruit",
+    "Witbank",
+    "Secunda",
+    "Middelburg",
+    "Ermelo",
+    "Standerton",
+    "Sabie",
+    "White River",
+    "Hazyview",
+    "Barberton",
+  ],
+  "North West": [
+    "Rustenburg",
+    "Klerksdorp",
+    "Potchefstroom",
+    "Mahikeng",
+    "Brits",
+    "Stilfontein",
+    "Carletonville",
+    "Lichtenburg",
+  ],
+  "Free State": [
+    "Bloemfontein",
+    "Welkom",
+    "Kroonstad",
+    "Bethlehem",
+    "Sasolburg",
+    "Virginia",
+    "Parys",
+    "Vredefort",
+    "Phuthaditjhaba",
+    "Harrismith",
+  ],
+  "Northern Cape": [
+    "Kimberley",
+    "Upington",
+    "Kuruman",
+    "Springbok",
+    "De Aar",
+    "Postmasburg",
+    "Calvinia",
+    "Carnarvon",
+    "Prieska",
+  ],
+};
+
 // Checkout Page JavaScript
 document.addEventListener("DOMContentLoaded", function () {
   console.log("🛒 Checkout page loaded");
@@ -12,6 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
   loadCheckoutData();
   initializePaymentMethods();
   initializeFormValidation();
+  initializeCheckoutProgress();
 
   function initCheckoutNavbar() {
     const navbar = document.querySelector(".navbar");
@@ -209,6 +360,71 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("checkout-form");
     const placeOrderBtn = document.getElementById("place-order-btn");
 
+    // Initialize province and city dropdowns
+    initializeLocationDropdowns();
+
+    // Phone number formatting with SA validation
+    const phone = document.getElementById("phone");
+    if (phone) {
+      // Set placeholder to show format
+      phone.placeholder = "+27 XX XXX XXXX";
+
+      phone.addEventListener("input", function (e) {
+        let value = e.target.value.replace(/\D/g, "");
+
+        // Always start with +27
+        if (value.length > 0) {
+          if (value.startsWith("27")) {
+            value = value.substring(2); // Remove 27 if user typed it
+          }
+          if (value.startsWith("0")) {
+            value = value.substring(1); // Remove leading 0
+          }
+
+          // Limit to 9 digits after +27
+          value = value.substring(0, 9);
+
+          // Format as +27 XX XXX XXXX
+          if (value.length > 0) {
+            if (value.length <= 2) {
+              e.target.value = `+27 ${value}`;
+            } else if (value.length <= 5) {
+              e.target.value = `+27 ${value.slice(0, 2)} ${value.slice(2)}`;
+            } else {
+              e.target.value = `+27 ${value.slice(0, 2)} ${value.slice(
+                2,
+                5
+              )} ${value.slice(5)}`;
+            }
+          } else {
+            e.target.value = "+27 ";
+          }
+        } else {
+          e.target.value = "+27 ";
+        }
+
+        // Clear error when user starts typing
+        clearFieldError(e.target);
+      });
+
+      // Set initial value
+      if (!phone.value || phone.value === "") {
+        phone.value = "+27 ";
+      }
+    }
+
+    // Postal Code validation (4 digits only)
+    const postalCode = document.getElementById("postalCode");
+    if (postalCode) {
+      postalCode.placeholder = "e.g. 7800";
+      postalCode.addEventListener("input", function (e) {
+        let value = e.target.value.replace(/\D/g, ""); // Only numbers
+        value = value.substring(0, 4); // Limit to 4 digits
+        e.target.value = value;
+        clearFieldError(e.target);
+      });
+    }
+
     // Card number formatting
     const cardNumber = document.getElementById("cardNumber");
     if (cardNumber) {
@@ -219,6 +435,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (formattedInputValue.length <= 19) {
           e.target.value = formattedInputValue;
         }
+        clearFieldError(e.target);
       });
     }
 
@@ -231,6 +448,7 @@ document.addEventListener("DOMContentLoaded", function () {
           value = value.slice(0, 2) + "/" + value.slice(2, 4);
         }
         e.target.value = value;
+        clearFieldError(e.target);
       });
     }
 
@@ -239,28 +457,261 @@ document.addEventListener("DOMContentLoaded", function () {
     if (cvv) {
       cvv.addEventListener("input", function (e) {
         e.target.value = e.target.value.replace(/\D/g, "");
+        clearFieldError(e.target);
       });
     }
 
-    // Phone number formatting
-    const phone = document.getElementById("phone");
-    if (phone) {
-      phone.addEventListener("input", function (e) {
-        let value = e.target.value.replace(/\D/g, "");
-        if (value.startsWith("27")) {
-          value = "+" + value;
-        } else if (value.startsWith("0")) {
-          value = "+27" + value.slice(1);
-        }
-        e.target.value = value;
-      });
-    }
+    // Add real-time validation for other fields
+    const textFields = ["firstName", "lastName", "email", "address"];
+    textFields.forEach((fieldName) => {
+      const field = document.getElementById(fieldName);
+      if (field) {
+        field.addEventListener("input", function (e) {
+          clearFieldError(e.target);
+        });
+
+        field.addEventListener("blur", function (e) {
+          validateSingleField(fieldName, e.target.value);
+        });
+      }
+    });
 
     // Place order functionality
     placeOrderBtn.addEventListener("click", function (e) {
       e.preventDefault();
       processOrder();
     });
+  }
+
+  // Initialize Province and City dropdowns
+  function initializeLocationDropdowns() {
+    const provinceSelect = document.getElementById("province");
+    const citySelect = document.getElementById("city");
+
+    if (!provinceSelect || !citySelect) return;
+
+    // Clear existing options
+    provinceSelect.innerHTML = '<option value="">Select Province</option>';
+    citySelect.innerHTML = '<option value="">Select City</option>';
+    citySelect.disabled = true;
+
+    // Populate provinces
+    Object.keys(SA_LOCATIONS).forEach((province) => {
+      const option = document.createElement("option");
+      option.value = province;
+      option.textContent = province;
+      provinceSelect.appendChild(option);
+    });
+
+    // Handle province selection
+    provinceSelect.addEventListener("change", function () {
+      const selectedProvince = this.value;
+      citySelect.innerHTML = '<option value="">Select City</option>';
+
+      if (selectedProvince && SA_LOCATIONS[selectedProvince]) {
+        citySelect.disabled = false;
+
+        SA_LOCATIONS[selectedProvince].forEach((city) => {
+          const option = document.createElement("option");
+          option.value = city;
+          option.textContent = city;
+          citySelect.appendChild(option);
+        });
+
+        clearFieldError(provinceSelect);
+      } else {
+        citySelect.disabled = true;
+      }
+
+      // Clear city selection when province changes
+      citySelect.value = "";
+    });
+
+    // Handle city selection
+    citySelect.addEventListener("change", function () {
+      if (this.value) {
+        clearFieldError(this);
+      }
+    });
+  }
+
+  // Enhanced form validation with error display
+  function validateForm(data) {
+    let isValid = true;
+    clearAllErrors();
+
+    // Required text fields
+    const requiredFields = {
+      firstName: "First name",
+      lastName: "Last name",
+      email: "Email address",
+      address: "Street address",
+    };
+
+    Object.entries(requiredFields).forEach(([field, label]) => {
+      if (!data[field] || data[field].trim() === "") {
+        showFieldError(field, `${label} is required`);
+        isValid = false;
+      }
+    });
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (data.email && !emailRegex.test(data.email)) {
+      showFieldError("email", "Please enter a valid email address");
+      isValid = false;
+    }
+
+    // Phone validation (must be +27 + 9 digits)
+    if (!data.phone || data.phone.replace(/\D/g, "").length !== 11) {
+      // +27 + 9 digits = 11 total
+      showFieldError(
+        "phone",
+        "Please enter a valid SA phone number (+27 XX XXX XXXX)"
+      );
+      isValid = false;
+    }
+
+    // Province validation
+    if (!data.province) {
+      showFieldError("province", "Please select a province");
+      isValid = false;
+    }
+
+    // City validation
+    if (!data.city) {
+      showFieldError("city", "Please select a city");
+      isValid = false;
+    }
+
+    // Postal code validation (must be exactly 4 digits)
+    if (!data.postalCode || data.postalCode.length !== 4) {
+      showFieldError("postalCode", "Postal code must be exactly 4 digits");
+      isValid = false;
+    }
+
+    // Payment method specific validation
+    if (data.paymentMethod === "card") {
+      const cardNumber = data.cardNumber.replace(/\s/g, "");
+
+      if (!cardNumber || cardNumber.length < 13 || cardNumber.length > 19) {
+        showFieldError("cardNumber", "Please enter a valid card number");
+        isValid = false;
+      }
+
+      if (!data.expiryDate || data.expiryDate.length !== 5) {
+        showFieldError("expiryDate", "Please enter expiry date (MM/YY)");
+        isValid = false;
+      }
+
+      if (!data.cvv || data.cvv.length < 3) {
+        showFieldError("cvv", "Please enter a valid CVV");
+        isValid = false;
+      }
+    }
+
+    return isValid;
+  }
+
+  // Validate individual field
+  function validateSingleField(fieldName, value) {
+    let isValid = true;
+
+    switch (fieldName) {
+      case "email":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (value && !emailRegex.test(value)) {
+          showFieldError(fieldName, "Please enter a valid email address");
+          isValid = false;
+        }
+        break;
+      case "firstName":
+      case "lastName":
+        if (value && value.length < 2) {
+          showFieldError(fieldName, "Must be at least 2 characters");
+          isValid = false;
+        }
+        break;
+    }
+
+    return isValid;
+  }
+
+  // Show field error
+  function showFieldError(fieldName, message) {
+    const field = document.getElementById(fieldName);
+    if (!field) return;
+
+    // Add error styling to field
+    field.classList.add("input-error");
+
+    // Remove existing error message
+    const existingError = field.parentNode.querySelector(".form-error");
+    if (existingError) {
+      existingError.remove();
+    }
+
+    // Create and append error message
+    const errorElement = document.createElement("div");
+    errorElement.className = "form-error";
+    errorElement.textContent = message;
+
+    // Insert after the field
+    field.parentNode.insertBefore(errorElement, field.nextSibling);
+  }
+
+  // Clear field error
+  function clearFieldError(field) {
+    field.classList.remove("input-error");
+    const errorElement = field.parentNode.querySelector(".form-error");
+    if (errorElement) {
+      errorElement.remove();
+    }
+  }
+
+  // Clear all errors
+  function clearAllErrors() {
+    const errorFields = document.querySelectorAll(".input-error");
+    const errorMessages = document.querySelectorAll(".form-error");
+
+    errorFields.forEach((field) => field.classList.remove("input-error"));
+    errorMessages.forEach((msg) => msg.remove());
+  }
+
+  // Update collectFormData to handle new structure
+  function collectFormData() {
+    const selectedPayment = document.querySelector(
+      'input[name="payment"]:checked'
+    );
+
+    if (!selectedPayment) {
+      alert("Please select a payment method");
+      return null;
+    }
+
+    return {
+      firstName: document.getElementById("firstName").value,
+      lastName: document.getElementById("lastName").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      address: document.getElementById("address").value,
+      city: document.getElementById("city").value,
+      province: document.getElementById("province").value,
+      postalCode: document.getElementById("postalCode").value,
+      paymentMethod: selectedPayment.value,
+      cardNumber:
+        selectedPayment.value === "card"
+          ? document.getElementById("cardNumber").value
+          : null,
+      expiryDate:
+        selectedPayment.value === "card"
+          ? document.getElementById("expiryDate").value
+          : null,
+      cvv:
+        selectedPayment.value === "card"
+          ? document.getElementById("cvv").value
+          : null,
+    };
   }
 
   // Update both functions with the CORRECT template ID
@@ -304,11 +755,20 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
+    // Step 2: Payment Processing
+    updateProgressStep(2);
+
     const btn = document.getElementById("place-order-btn");
-    btn.innerHTML = "⏳ Processing Order...";
+    btn.innerHTML = "⏳ Processing Payment...";
     btn.disabled = true;
+    btn.classList.add("loading");
 
     try {
+      console.log("💳 Processing payment...");
+
+      // Simulate payment processing
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       console.log("📧 Testing basic email first...");
 
       // Test basic email first
@@ -319,35 +779,55 @@ document.addEventListener("DOMContentLoaded", function () {
         throw new Error("Basic EmailJS test failed");
       }
 
-      console.log("📧 Basic test passed, sending full order email...");
+      console.log("📧 Basic test passed, sending order emails...");
 
-      // Send full order email
-      const emailSent = await sendBusinessOrderNotification(formData, cart);
+      // Send business notification email (to you)
+      const businessEmailSent = await sendBusinessOrderNotification(
+        formData,
+        cart
+      );
+      console.log("📧 Business email result:", businessEmailSent);
 
-      console.log("📧 Full email result:", emailSent);
+      // Send customer confirmation email (to customer)
+      const customerEmailSent = await sendCustomerConfirmation(formData, cart);
+      console.log("📧 Customer email result:", customerEmailSent);
 
-      if (emailSent) {
-        console.log("✅ Email sent successfully!");
+      // As long as business email is sent, order is successful
+      if (businessEmailSent) {
+        console.log("✅ Business email sent successfully!");
+
+        // Step 3: Confirmation
+        updateProgressStep(3);
+        btn.innerHTML = "✅ Order Confirmed!";
+        btn.classList.remove("loading");
+        btn.classList.add("success-animation");
+
+        if (customerEmailSent) {
+          console.log("✅ Customer email also sent!");
+        } else {
+          console.log("⚠️ Customer email failed, but order still processed");
+        }
 
         setTimeout(() => {
           localStorage.removeItem("hoodrevenge-cart");
           showOrderSuccess(formData);
 
+          // ❌ REMOVED THE ALERT POPUP - Just redirect after delay
           setTimeout(() => {
-            alert(
-              "🎉 Order confirmed! You should receive an email notification."
-            );
             window.location.href = "shop.html";
-          }, 2000);
-        }, 1500);
+          }, 8000); // Longer delay to see the nice confirmation screen
+        }, 2000);
       } else {
-        console.error("❌ Email failed - not completing order");
+        console.error("❌ Business email failed - not completing order");
         alert(
           "⚠️ Order could not be processed. Email notification failed. Please try again."
         );
 
+        // Reset to step 1
+        updateProgressStep(1);
         btn.innerHTML = `Place Order - ${calculateOrderTotal(cart)}`;
         btn.disabled = false;
+        btn.classList.remove("loading");
       }
     } catch (error) {
       console.error("❌ Unexpected error:", error);
@@ -355,8 +835,11 @@ document.addEventListener("DOMContentLoaded", function () {
         "⚠️ Order could not be processed due to an error. Please try again."
       );
 
+      // Reset to step 1
+      updateProgressStep(1);
       btn.innerHTML = `Place Order - ${calculateOrderTotal(cart)}`;
       btn.disabled = false;
+      btn.classList.remove("loading");
     }
   }
 
@@ -502,125 +985,258 @@ document.addEventListener("DOMContentLoaded", function () {
     return `R${total.toFixed(2)}`;
   }
 
-  function collectFormData() {
-    const selectedPayment = document.querySelector(
-      'input[name="payment"]:checked'
-    ).value;
+  // Send customer confirmation email - WITH DEBUGGING
+  function sendCustomerConfirmation(orderData, cartItems) {
+    console.log("📧 Sending customer confirmation email...");
+    console.log("📧 Customer email address:", orderData.email);
 
-    return {
-      firstName: document.getElementById("firstName").value,
-      lastName: document.getElementById("lastName").value,
-      email: document.getElementById("email").value,
-      phone: document.getElementById("phone").value,
-      address: document.getElementById("address").value,
-      city: document.getElementById("city").value,
-      province: document.getElementById("province").value,
-      postalCode: document.getElementById("postalCode").value,
-      paymentMethod: selectedPayment,
-      cardNumber:
-        selectedPayment === "card"
-          ? document.getElementById("cardNumber").value
-          : null,
-      expiryDate:
-        selectedPayment === "card"
-          ? document.getElementById("expiryDate").value
-          : null,
-      cvv:
-        selectedPayment === "card"
-          ? document.getElementById("cvv").value
-          : null,
+    const customerEmailData = {
+      to_email: orderData.email,
+      customer_name: orderData.firstName,
+      order_items: cartItems
+        .map(
+          (item) =>
+            `${item.name} - Size: ${item.size || "M"} - Qty: ${
+              item.quantity
+            } - R${item.price || 650}`
+        )
+        .join("\n"),
+      order_total: calculateOrderTotal(cartItems),
+      order_date: new Date().toLocaleDateString(),
+      shipping_address: `${orderData.address}, ${orderData.city}, ${orderData.province} ${orderData.postalCode}`,
+      payment_method: orderData.paymentMethod.toUpperCase(),
     };
-  }
 
-  function validateForm(data) {
-    const required = [
-      "firstName",
-      "lastName",
-      "email",
-      "phone",
-      "address",
-      "city",
-      "province",
-      "postalCode",
-    ];
+    console.log("📧 CUSTOMER EMAIL DATA:");
+    console.log(JSON.stringify(customerEmailData, null, 2));
 
-    for (let field of required) {
-      if (!data[field] || data[field].trim() === "") {
-        alert(
-          `Please fill in the ${field
-            .replace(/([A-Z])/g, " $1")
-            .toLowerCase()} field.`
+    return emailjs
+      .send(
+        "service_nl2859l",
+        "template_51d2rvf", // ✅ Your customer template ID
+        customerEmailData
+      )
+      .then(function (response) {
+        console.log(
+          "✅ Customer confirmation email sent successfully:",
+          response
         );
-        document.getElementById(field).focus();
+        return true;
+      })
+      .catch(function (error) {
+        console.error("❌ Customer confirmation email FAILED:");
+        console.error("Error details:", error);
+        if (error.text) console.error("Error text:", error.text);
+        if (error.status) console.error("Error status:", error.status);
         return false;
-      }
-    }
-
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(data.email)) {
-      alert("Please enter a valid email address.");
-      document.getElementById("email").focus();
-      return false;
-    }
-
-    // Validate card details if card payment selected
-    if (data.paymentMethod === "card") {
-      if (!data.cardNumber || data.cardNumber.replace(/\s/g, "").length < 13) {
-        alert("Please enter a valid card number.");
-        document.getElementById("cardNumber").focus();
-        return false;
-      }
-
-      if (!data.expiryDate || data.expiryDate.length !== 5) {
-        alert("Please enter a valid expiry date (MM/YY).");
-        document.getElementById("expiryDate").focus();
-        return false;
-      }
-
-      if (!data.cvv || data.cvv.length < 3) {
-        alert("Please enter a valid CVV.");
-        document.getElementById("cvv").focus();
-        return false;
-      }
-    }
-
-    // Apple Pay and EFT don't need additional validation
-    if (data.paymentMethod === "applepay") {
-      console.log("Apple Pay payment method validated");
-    }
-
-    return true;
+      });
   }
 
-  // Add these missing functions at the end, before the closing bracket
-  function showOrderSuccess(orderData) {
-    const notification = document.createElement("div");
-    notification.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="font-size: 2rem;">🎉</span>
-        <div>
-          <strong>Order Confirmed!</strong>
-          <br><small>Thank you ${orderData.firstName}! Check your email for details.</small>
+  // Checkout Progress Management
+  function initializeCheckoutProgress() {
+    updateProgressStep(1); // Start at step 1
+
+    // Add progress line element
+    const stepsContainer = document.querySelector(".checkout-steps");
+    if (stepsContainer && !stepsContainer.querySelector(".progress-line")) {
+      const progressLine = document.createElement("div");
+      progressLine.className = "progress-line";
+      stepsContainer.appendChild(progressLine);
+    }
+  }
+
+  // Update the updateProgressStep function with better centering
+  function updateProgressStep(currentStep) {
+    console.log(`🔄 Updating progress to step ${currentStep}`);
+
+    const steps = document.querySelectorAll(".step");
+    const progressLine = document.querySelector(".progress-line");
+
+    steps.forEach((step, index) => {
+      const stepNumber = index + 1;
+
+      // Remove all classes first
+      step.classList.remove("active", "completed");
+
+      if (stepNumber < currentStep) {
+        step.classList.add("completed");
+      } else if (stepNumber === currentStep) {
+        step.classList.add("active");
+      }
+    });
+
+    // Update progress line with PERFECT centering
+    if (progressLine) {
+      const stepsContainer = document.querySelector(".checkout-steps");
+      if (stepsContainer) {
+        // Get the actual positions of step circles
+        const firstStep = steps[0];
+        const lastStep = steps[steps.length - 1];
+
+        if (firstStep && lastStep) {
+          // Calculate the total distance between first and last step centers
+          const containerRect = stepsContainer.getBoundingClientRect();
+          const firstRect = firstStep
+            .querySelector(".step-number")
+            .getBoundingClientRect();
+          const lastRect = lastStep
+            .querySelector(".step-number")
+            .getBoundingClientRect();
+
+          // Calculate the distance between centers
+          const totalDistance =
+            lastRect.left +
+            lastRect.width / 2 -
+            (firstRect.left + firstRect.width / 2);
+          const containerWidth = containerRect.width - 2 * 32; // Account for padding
+
+          // Calculate progress percentage more accurately
+          let progressWidth = 0;
+
+          if (currentStep === 1) {
+            progressWidth = 0;
+          } else if (currentStep === 2) {
+            progressWidth = 50; // Exactly halfway
+          } else if (currentStep === 3) {
+            progressWidth = 100; // Complete
+          }
+
+          progressLine.style.width = `${progressWidth}%`;
+        }
+      }
+    }
+
+    // Show appropriate section
+    showCheckoutSection(currentStep);
+  }
+
+  function showCheckoutSection(step) {
+    const sections = document.querySelectorAll(".checkout-section");
+
+    sections.forEach((section, index) => {
+      section.classList.remove("active");
+
+      // Add slight delay for smooth transition
+      setTimeout(() => {
+        if (index + 1 === step) {
+          section.classList.add("active");
+        }
+      }, 100);
+    });
+  }
+
+  // Order Confirmation Section HTML
+  const orderConfirmationHTML = `
+  <!-- Order Confirmation Section -->
+  <section class="checkout-section" id="order-confirmation" style="display: none">
+    <div class="confirmation-container">
+      <div class="confirmation-content">
+        <!-- Success Animation -->
+        <div class="success-icon">
+          <div class="checkmark">
+            <svg viewBox="0 0 52 52">
+              <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+              <path class="checkmark-check" fill="none" d="m14.1,27.2l7.1,7.2 16.7-16.8"/>
+            </svg>
+          </div>
+        </div>
+        
+        <!-- Success Message -->
+        <h1 class="confirmation-title">Thank You!</h1>
+        <h2 class="confirmation-subtitle">Your order has been confirmed</h2>
+        
+        <div class="confirmation-details">
+          <p class="confirmation-message">
+            🎉 <strong>Thank you for shopping with HoodRevenge!</strong>
+          </p>
+          
+          <div class="confirmation-info">
+            <div class="info-item">
+              <span class="info-icon">📧</span>
+              <p>We've sent you a confirmation email with all the details</p>
+            </div>
+            
+            <div class="info-item">
+              <span class="info-icon">📞</span>
+              <p>We'll be in touch with you within 24 hours about your order</p>
+            </div>
+            
+            <div class="info-item">
+              <span class="info-icon">🚚</span>
+              <p>Your items will be processed and shipped within 1-3 business days</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="confirmation-actions">
+          <a href="shop.html" class="btn btn-primary">Continue Shopping</a>
+          <a href="contact.html" class="btn btn-outline">Contact Us</a>
+        </div>
+        
+        <!-- Order Summary Preview -->
+        <div class="order-preview">
+          <h4>Order Summary</h4>
+          <div id="confirmation-order-items">
+            <!-- Will be populated by JavaScript -->
+          </div>
         </div>
       </div>
-    `;
-    notification.style.cssText = `
-      position: fixed;
-      top: 100px;
-      right: 20px;
-      background: #2c2c2c;
-      color: white;
-      padding: 2rem 2.5rem;
-      border-radius: 15px;
-      z-index: 10000;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-      transform: translateX(400px);
-      transition: transform 0.3s ease;
-      min-width: 350px;
-    `;
+    </div>
+  </section>
+  `;
 
-    document.body.appendChild(notification);
-    setTimeout(() => (notification.style.transform = "translateX(0)"), 100);
+  // Inject the order confirmation HTML into the page
+  document.body.insertAdjacentHTML("beforeend", orderConfirmationHTML);
+
+  // Function to show the order confirmation section
+  function showOrderSuccess(orderData) {
+    // Hide the main checkout content
+    const checkoutContent = document.querySelector(".checkout-content");
+    const checkoutHeader = document.querySelector(".checkout-header");
+
+    if (checkoutContent) checkoutContent.style.display = "none";
+    if (checkoutHeader) checkoutHeader.style.display = "none";
+
+    // Get cart items
+    const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+
+    // Populate order preview
+    const orderItemsContainer = document.getElementById(
+      "confirmation-order-items"
+    );
+    if (orderItemsContainer && cart.length > 0) {
+      orderItemsContainer.innerHTML = cart
+        .map(
+          (item) => `
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span>${item.name} (${item.size || "M"}) × ${item.quantity}</span>
+            <span>R${((item.price || 650) * item.quantity).toFixed(2)}</span>
+          </div>
+        `
+        )
+        .join("");
+
+      // Add total
+      const total =
+        cart.reduce(
+          (sum, item) => sum + (item.price || 650) * item.quantity,
+          0
+        ) * 1.15;
+      orderItemsContainer.innerHTML += `
+        <div style="border-top: 1px solid #ddd; padding-top: 0.5rem; margin-top: 1rem; font-weight: bold;">
+          <div style="display: flex; justify-content: space-between;">
+            <span>Total (incl. VAT):</span>
+            <span>R${total.toFixed(2)}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // Show the confirmation section
+    const confirmationSection = document.getElementById("order-confirmation");
+    if (confirmationSection) {
+      confirmationSection.style.display = "block";
+      confirmationSection.classList.add("active");
+    }
   }
 });

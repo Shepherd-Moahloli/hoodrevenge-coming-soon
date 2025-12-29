@@ -349,3 +349,597 @@
 .continue-link:hover {
   color: #2c2c2c;
 }
+
+/* Update your checkout progress styles with better centering */
+
+.checkout-steps {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem auto;
+  position: relative;
+  max-width: 500px; /* Constrain width */
+  padding: 0 1rem; /* Reduce padding */
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto; /* Don't flex-grow, keep fixed size */
+}
+
+.step-number {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.4s ease;
+  border: 3px solid #e0e0e0;
+  background: white;
+  color: #999;
+  position: relative;
+  overflow: hidden;
+}
+
+.step-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.4s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Active step styling */
+.step.active .step-number {
+  background: #2c2c2c;
+  color: white;
+  border-color: #2c2c2c;
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(44, 44, 44, 0.3);
+}
+
+.step.active .step-label {
+  color: #2c2c2c;
+  font-weight: 600;
+}
+
+/* Completed step styling */
+.step.completed .step-number {
+  background: #28a745 !important; /* Force green background */
+  color: white !important;
+  border-color: #28a745 !important;
+  position: relative;
+  font-size: 0; /* Hide the number */
+  opacity: 1 !important; /* Force full opacity */
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4) !important; /* Add green glow */
+}
+
+.step.completed .step-number::before {
+  content: "✓";
+  font-size: 1.2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: checkmarkPop 0.3s ease;
+  opacity: 1 !important; /* Force checkmark opacity */
+  color: white !important;
+}
+
+.step.completed .step-label {
+  color: #28a745 !important;
+  font-weight: 600;
+  opacity: 1 !important;
+}
+
+/* FIXED Progress line - NO OVERFLOW */
+.checkout-steps::before {
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: 75px; /* Start after first circle */
+  right: 75px; /* End before last circle */
+  height: 3px;
+  background: #e0e0e0;
+  z-index: 1;
+  border-radius: 2px;
+}
+
+.progress-line {
+  position: absolute;
+  top: 25px;
+  left: 75px; /* Start after first circle */
+  height: 3px;
+  background: #28a745; /* Green progress */
+  z-index: 1;
+  width: 0%;
+  max-width: calc(100% - 150px); /* Prevent overflow */
+  transition: width 0.8s ease;
+  border-radius: 2px;
+  transform-origin: left;
+}
+
+/* Mobile responsive fixes */
+@media (max-width: 768px) {
+  .checkout-steps {
+    max-width: 350px;
+    padding: 0 0.5rem;
+  }
+
+  .checkout-steps::before {
+    left: 45px;
+    right: 45px;
+  }
+
+  .progress-line {
+    left: 45px;
+    max-width: calc(100% - 90px);
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .checkout-steps {
+    max-width: 350px;
+    padding: 0 0.5rem;
+  }
+
+  .step-label {
+    font-size: 0.7rem;
+  }
+
+  .checkout-steps::before {
+    left: calc(20px + 0.5rem);
+    right: calc(20px + 0.5rem);
+  }
+
+  .progress-line {
+    left: calc(20px + 0.5rem);
+  }
+}
+
+/* Add this CSS to your checkout page or CSS file */
+.checkout-steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  position: relative;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.step-number {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.4s ease;
+  border: 3px solid #e0e0e0;
+  background: white;
+  color: #999;
+}
+
+.step-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.4s ease;
+}
+
+/* Active step styling */
+.step.active .step-number {
+  background: #2c2c2c;
+  color: white;
+  border-color: #2c2c2c;
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(44, 44, 44, 0.3);
+}
+
+.step.active .step-label {
+  color: #2c2c2c;
+  font-weight: 600;
+}
+
+/* Completed step styling */
+.step.completed .step-number {
+  background: #28a745 !important; /* Force green background */
+  color: white !important;
+  border-color: #28a745 !important;
+  position: relative;
+  font-size: 0; /* Hide the number */
+  opacity: 1 !important; /* Force full opacity */
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4) !important; /* Add green glow */
+}
+
+.step.completed .step-number::before {
+  content: "✓";
+  font-size: 1.2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: checkmarkPop 0.3s ease;
+  opacity: 1 !important; /* Force checkmark opacity */
+  color: white !important;
+}
+
+.step.completed .step-label {
+  color: #28a745 !important;
+  font-weight: 600;
+  opacity: 1 !important;
+}
+
+/* Progress line between steps */
+.checkout-steps::before {
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 3px;
+  background: #e0e0e0;
+  z-index: 1;
+}
+
+.progress-line {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 3px;
+  background: #28a745;
+  z-index: 1;
+  width: 0;
+  transition: width 0.8s ease;
+}
+
+/* Checkout sections */
+.checkout-section {
+  display: none;
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 0.5s ease;
+}
+
+.checkout-section.active {
+  display: block;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Payment method animations */
+.payment-option {
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+.payment-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.payment-option.active {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(44, 44, 44, 0.2);
+}
+
+/* Button animations */
+.checkout-btn {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.checkout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(44, 44, 44, 0.3);
+}
+
+.checkout-btn.loading {
+  pointer-events: none;
+}
+
+.checkout-btn.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Success animation */
+.success-animation {
+  animation: successPulse 0.6s ease;
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Add this CSS for the confirmation screen */
+
+.confirmation-container {
+  position: fixed; /* Make it overlay everything */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.95
+  ); /* White background with slight transparency */
+  backdrop-filter: blur(10px); /* Blur the background */
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
+  padding: 2rem;
+  z-index: 9999; /* Bring to top of everything */
+}
+
+.confirmation-content {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem;
+  max-width: 600px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+  animation: fadeInUp 0.6s ease;
+  position: relative;
+  z-index: 10000;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Success Icon Animation */
+
+.checkmark {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  animation: scaleIn 0.5s ease 0.3s both;
+}
+
+.checkmark svg {
+  width: 100%;
+  height: 100%;
+  opacity: 1; /* This is already set to 1, which is good */
+}
+
+.success-icon {
+  margin-bottom: 2rem;
+  opacity: 1; /* Ensure parent container is also 100% opaque */
+}
+
+.checkmark-circle {
+  stroke: #28a745 !important; /* Force green color */
+  stroke-width: 4 !important; /* Increase stroke width even more */
+  stroke-miterlimit: 10;
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  animation: strokeCircle 0.6s cubic-bezier(0.65, 0, 0.45, 1) 0.5s both;
+  opacity: 1 !important; /* Force 100% opacity */
+  stroke-opacity: 1 !important; /* Force stroke opacity */
+  fill: none !important; /* Ensure no fill conflicts */
+}
+
+.checkmark-check {
+  stroke: #28a745 !important; /* Force green color */
+  stroke-width: 4 !important; /* Increase stroke width even more */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: strokeCheck 0.3s cubic-bezier(0.65, 0, 0.45, 1) 1s both;
+  opacity: 1 !important; /* Force 100% opacity */
+  stroke-opacity: 1 !important; /* Force stroke opacity */
+  fill: none !important; /* Ensure no fill conflicts */
+}
+
+/* Also force the SVG container to be 100% opaque */
+.checkmark svg {
+  width: 100%;
+  height: 100%;
+  opacity: 1 !important; /* Force container opacity */
+}
+
+.success-icon {
+  margin-bottom: 2rem;
+  opacity: 1 !important; /* Force parent opacity */
+}
+
+.checkmark {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  animation: scaleIn 0.5s ease 0.3s both;
+  opacity: 1 !important; /* Force checkmark container opacity */
+}
+
+/* Typography */
+.confirmation-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #2c2c2c;
+  margin-bottom: 0.5rem;
+  animation: fadeInUp 0.6s ease 0.4s both;
+}
+
+.confirmation-subtitle {
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #666;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.6s ease 0.5s both;
+}
+
+.confirmation-message {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.6s ease 0.6s both;
+}
+
+/* Info Items */
+.confirmation-info {
+  text-align: left;
+  margin: 2rem 0;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.6s ease 0.7s both;
+}
+
+.info-icon {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.info-item p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Action Buttons */
+.confirmation-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+  animation: fadeInUp 0.6s ease 0.8s both;
+}
+
+.btn {
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: #2c2c2c;
+  color: white;
+  border: 2px solid #2c2c2c;
+}
+
+.btn-primary:hover {
+  background: #1a1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(44, 44, 44, 0.3);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #2c2c2c;
+  border: 2px solid #2c2c2c;
+}
+
+.btn-outline:hover {
+  background: #2c2c2c;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(44, 44, 44, 0.3);
+}
+
+/* Order Preview */
+.order-preview {
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  text-align: left;
+  animation: fadeInUp 0.6s ease 0.9s both;
+}
+
+.order-preview h4 {
+  margin-bottom: 1rem;
+  color: #2c2c2c;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .confirmation-container {
+    padding: 1rem;
+  }
+
+  .confirmation-content {
+    padding: 2rem 1.5rem;
+  }
+
+  .confirmation-title {
+    font-size: 2.5rem;
+  }
+
+  .confirmation-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
