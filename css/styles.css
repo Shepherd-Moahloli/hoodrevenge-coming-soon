@@ -520,6 +520,7 @@ a {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
+    width: 100%;
   }
 
   .product-card {
@@ -528,11 +529,82 @@ a {
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
+    width: 100%; /* Ensure card takes full width */
   }
 
   .product-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .product-image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    width: 100%; /* Ensure container takes full width */
+  }
+
+  .product-main-image {
+    width: 100%; /* Make image fill container width */
+    height: 300px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    display: block; /* Remove any default spacing */
+  }
+
+  .image-controls {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .product-card:hover .image-controls {
+    opacity: 1;
+  }
+
+  .image-btn {
+    background: linear-gradient(
+      90deg,
+      #1f2937,
+      #111827
+    ); /* Match your main button style */
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 10px; /* Match your button border radius */
+    font-size: 0.75rem;
+    font-weight: 600; /* Match your button font weight */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 50px;
+    text-align: center;
+  }
+
+  .image-btn:hover {
+    transform: translateY(-1px); /* Match your button hover effect */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(90deg, #111827, #000000); /* Darker on hover */
+  }
+
+  .image-btn:active {
+    transform: translateY(1px); /* Match your button active effect */
+  }
+
+  .image-btn.active {
+    background: #28a745; /* Green for active state */
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  }
+
+  .image-btn.active:hover {
+    background: #218838; /* Darker green on hover when active */
+    transform: translateY(-2px);
   }
 
   .product-img {

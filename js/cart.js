@@ -1,235 +1,255 @@
-// Cart Management System
-class CartManager {
-  constructor() {
-    this.cart = this.loadCart();
-    this.init();
-  }
+console.log("🚀 CART.JS LOADED AT:", new Date().toISOString());
+console.log("File timestamp:", Date.now());
 
-  // Load cart from localStorage
-  loadCart() {
-    const savedCart = localStorage.getItem("hoodrevenge-cart");
-    return savedCart ? JSON.parse(savedCart) : [];
-  }
+// DEFINE FUNCTIONS OUTSIDE DOMContentLoaded - This is the key!
+window.testRemove = function () {
+  alert("Test function works! Time: " + Date.now());
+  console.log("Test remove function called!");
+};
 
-  // Save cart to localStorage
-  saveCart() {
-    localStorage.setItem("hoodrevenge-cart", JSON.stringify(this.cart));
-    this.updateCartCount();
-  }
+window.removeItem = function (productId) {
+  console.log("🗑️ Removing item with ID:", productId);
 
-  // Add item to cart
-  addItem(product) {
-    const existingItem = this.cart.find((item) => item.id === product.id);
+  const removeButton = event.target;
+  removeButton.disabled = true;
+  removeButton.textContent = "Removing...";
 
-    if (existingItem) {
-      existingItem.quantity += 1;
+  let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  console.log("Cart before removal:", cart);
+
+  cart = cart.filter((item) => String(item.id) !== String(productId));
+
+  console.log("Cart after removal:", cart);
+  localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+
+  showRemoveNotification();
+
+  // CHANGE THIS LINE - use location.reload() instead of displayCart()
+  setTimeout(() => {
+    location.reload(); // This will refresh the whole page and show updated cart
+  }, 500);
+};
+
+// Add this notification function
+function showRemoveNotification() {
+  const notification = document.createElement("div");
+  notification.innerHTML = "✅ Item removed from cart";
+  notification.style.cssText = `
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    z-index: 10000;
+    font-weight: bold;
+    animation: slideIn 0.3s ease;
+  `;
+
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    document.body.removeChild(notification);
+  }, 2000);
+}
+
+window.removeFromCart = function (productId, size) {
+  alert(`REMOVING: Product ${productId}, Size ${size}`);
+  console.log(`🗑️ Remove from cart: ID ${productId}, Size ${size}`);
+
+  let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  const numericProductId = parseInt(productId);
+
+  console.log("Before removal:", cart.length, "items");
+
+  cart = cart.filter((item) => {
+    const itemId = parseInt(item.id);
+    const keepItem = !(itemId === numericProductId && item.size === size);
+
+    if (!keepItem) {
+      console.log(`🎯 Found item to remove:`, item);
+    }
+
+    return keepItem;
+  });
+
+  console.log("After removal:", cart.length, "items");
+
+  localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+
+  // Reload to update display
+  location.reload();
+};
+
+window.updateQuantity = function (productId, size, newQuantity) {
+  console.log(
+    `🔄 Update quantity: ID ${productId}, Size ${size}, New quantity: ${newQuantity}`
+  );
+
+  let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  const item = cart.find((item) => item.id == productId && item.size === size);
+
+  if (item) {
+    if (newQuantity <= 0) {
+      removeFromCart(productId, size);
     } else {
-      this.cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        quantity: 1,
-      });
-    }
-
-    this.saveCart();
-    this.renderCart();
-    this.showAddedNotification(product.name);
-  }
-
-  // Remove item from cart
-  removeItem(productId) {
-    this.cart = this.cart.filter((item) => item.id !== productId);
-    this.saveCart();
-    this.renderCart();
-  }
-
-  // Update item quantity
-  updateQuantity(productId, newQuantity) {
-    const item = this.cart.find((item) => item.id === productId);
-    if (item) {
-      if (newQuantity <= 0) {
-        this.removeItem(productId);
-      } else {
-        item.quantity = newQuantity;
-        this.saveCart();
-        this.renderCart();
-      }
+      item.quantity = newQuantity;
+      localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+      location.reload();
     }
   }
+};
 
-  // Get cart total
-  getTotal() {
-    return this.cart.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
+window.updateSize = function (productId, oldSize, newSize) {
+  console.log(`👕 Update size: ID ${productId}, from ${oldSize} to ${newSize}`);
+
+  let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  const item = cart.find(
+    (item) => item.id == productId && item.size === oldSize
+  );
+
+  if (item) {
+    item.size = newSize;
+    localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+    location.reload();
+  }
+};
+
+console.log("✅ Functions defined:", {
+  testRemove: typeof window.testRemove,
+  removeFromCart: typeof window.removeFromCart,
+  updateQuantity: typeof window.updateQuantity,
+  updateSize: typeof window.updateSize,
+});
+
+// NOW the DOMContentLoaded for page setup
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("🛒 Cart page loaded");
+
+  displayCartItems();
+  updateCartSummary();
+
+  function displayCartItems() {
+    const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+    const cartItemsContainer = document.getElementById("cart-items");
+    const emptyCartMessage = document.getElementById("empty-cart");
+
+    console.log("Cart data loaded:", cart);
+
+    if (!cartItemsContainer) {
+      console.log("Cart container not found");
+      return;
+    }
+
+    if (cart.length === 0) {
+      if (emptyCartMessage) emptyCartMessage.style.display = "block";
+      if (cartItemsContainer) cartItemsContainer.style.display = "none";
+      return;
+    }
+
+    if (emptyCartMessage) emptyCartMessage.style.display = "none";
+    if (cartItemsContainer) cartItemsContainer.style.display = "block";
+
+    cartItemsContainer.innerHTML = cart
+      .map((item) => {
+        let imageUrl = "images/Artboard 1.jpg";
+
+        if (
+          item.images &&
+          item.images.main &&
+          item.images.main !== "undefined"
+        ) {
+          imageUrl = item.images.main;
+        }
+
+        const price = item.price || 650;
+        const size = item.size || "M";
+
+        return `
+          <div class="cart-item" data-id="${item.id}" data-size="${size}">
+            <div class="item-image">
+              <img src="${imageUrl}" alt="${item.name}" class="item-img" />
+            </div>
+            <div class="item-details">
+              <h3 class="item-name">${item.name}</h3>
+              <p class="item-price">R${price}</p>
+              <div class="size-selection">
+                <label>Size:</label>
+                <select class="size-dropdown" onchange="updateSize(${
+                  item.id
+                }, '${size}', this.value)">
+                  <option value="XS" ${
+                    size === "XS" ? "selected" : ""
+                  }>XS</option>
+                  <option value="S" ${size === "S" ? "selected" : ""}>S</option>
+                  <option value="M" ${size === "M" ? "selected" : ""}>M</option>
+                  <option value="L" ${size === "L" ? "selected" : ""}>L</option>
+                  <option value="XL" ${
+                    size === "XL" ? "selected" : ""
+                  }>XL</option>
+                  <option value="XXL" ${
+                    size === "XXL" ? "selected" : ""
+                  }>XXL</option>
+                </select>
+              </div>
+            </div>
+            <div class="item-actions">
+              <div class="quantity-controls">
+                <button class="quantity-btn" onclick="updateQuantity(${
+                  item.id
+                }, '${size}', ${item.quantity - 1})">−</button>
+                <span class="quantity-display">${item.quantity}</span>
+                <button class="quantity-btn" onclick="updateQuantity(${
+                  item.id
+                }, '${size}', ${item.quantity + 1})">+</button>
+              </div>
+              <div class="item-total">R${(price * item.quantity).toFixed(
+                2
+              )}</div>
+              <button class="remove-item" onclick="removeFromCart(${
+                item.id
+              }, '${size}')">REMOVE</button>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
   }
 
-  // Get cart count
-  getCount() {
-    return this.cart.reduce((count, item) => count + item.quantity, 0);
+  function updateCartSummary() {
+    const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+
+    const subtotal = cart.reduce((total, item) => {
+      const price = item.price || 650;
+      return total + price * item.quantity;
+    }, 0);
+
+    const vat = subtotal * 0.15;
+    const shipping = 0;
+    const total = subtotal + vat + shipping;
+
+    const subtotalElement = document.getElementById("cart-subtotal");
+    const vatElement = document.getElementById("cart-vat");
+    const totalElement = document.getElementById("cart-total");
+
+    if (subtotalElement)
+      subtotalElement.textContent = `R${subtotal.toFixed(2)}`;
+    if (vatElement) vatElement.textContent = `R${vat.toFixed(2)}`;
+    if (totalElement) totalElement.textContent = `R${total.toFixed(2)}`;
   }
 
-  // Update cart count in navbar
-  updateCartCount() {
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+    const count = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+
     const cartCountElements = document.querySelectorAll("#cart-count");
-    const count = this.getCount();
     cartCountElements.forEach((element) => {
       element.textContent = count;
     });
+
+    console.log(`🔢 Cart count updated to: ${count}`);
   }
 
-  // Show notification when item added
-  showAddedNotification(productName) {
-    // Create notification element
-    const notification = document.createElement("div");
-    notification.className = "cart-notification";
-    notification.innerHTML = `
-      <p><strong>${productName}</strong> added to cart!</p>
-    `;
-
-    // Add notification styles
-    notification.style.cssText = `
-      position: fixed;
-      top: 100px;
-      right: 20px;
-      background: #2c2c2c;
-      color: white;
-      padding: 1rem 2rem;
-      border-radius: 10px;
-      z-index: 10000;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      transform: translateX(400px);
-      transition: transform 0.3s ease;
-    `;
-
-    document.body.appendChild(notification);
-
-    // Animate in
-    setTimeout(() => {
-      notification.style.transform = "translateX(0)";
-    }, 100);
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-      notification.style.transform = "translateX(400px)";
-      setTimeout(() => {
-        document.body.removeChild(notification);
-      }, 300);
-    }, 3000);
-  }
-
-  // Render cart on cart page
-  renderCart() {
-    const cartList = document.getElementById("cart-list");
-    const emptyCart = document.getElementById("empty-cart");
-    const subtotalElement = document.getElementById("subtotal");
-    const taxElement = document.getElementById("tax");
-    const totalElement = document.getElementById("total");
-    const checkoutBtn = document.getElementById("checkout-btn");
-
-    if (!cartList) return; // Not on cart page
-
-    if (this.cart.length === 0) {
-      // Show empty cart
-      emptyCart.style.display = "block";
-      cartList.style.display = "none";
-      if (checkoutBtn) checkoutBtn.disabled = true;
-    } else {
-      // Show cart items
-      emptyCart.style.display = "none";
-      cartList.style.display = "block";
-      if (checkoutBtn) checkoutBtn.disabled = false;
-
-      // Render cart items
-      cartList.innerHTML = this.cart
-        .map(
-          (item) => `
-        <div class="cart-item" data-id="${item.id}">
-          <img src="${item.image}" alt="${item.name}" class="item-image">
-          <div class="item-details">
-            <h3>${item.name}</h3>
-            <p>Premium Streetwear</p>
-            <div class="item-price">$${item.price.toFixed(2)}</div>
-            <div class="quantity-controls">
-              <button class="quantity-btn minus" data-id="${item.id}">-</button>
-              <span class="quantity-display">${item.quantity}</span>
-              <button class="quantity-btn plus" data-id="${item.id}">+</button>
-            </div>
-            <button class="remove-item" data-id="${item.id}">Remove</button>
-          </div>
-          <div class="item-actions">
-            <div class="item-total">$${(item.price * item.quantity).toFixed(
-              2
-            )}</div>
-          </div>
-        </div>
-      `
-        )
-        .join("");
-
-      // Add event listeners for cart controls
-      this.addCartEventListeners();
-    }
-
-    // Update totals
-    const subtotal = this.getTotal();
-    const tax = subtotal * 0.08; // 8% tax
-    const total = subtotal + tax;
-
-    if (subtotalElement)
-      subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-    if (taxElement) taxElement.textContent = `$${tax.toFixed(2)}`;
-    if (totalElement) totalElement.textContent = `$${total.toFixed(2)}`;
-  }
-
-  // Add event listeners for cart page controls
-  addCartEventListeners() {
-    // Quantity buttons
-    document.querySelectorAll(".quantity-btn").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const productId = e.target.dataset.id;
-        const isPlus = e.target.classList.contains("plus");
-        const item = this.cart.find((item) => item.id === productId);
-
-        if (item) {
-          const newQuantity = isPlus ? item.quantity + 1 : item.quantity - 1;
-          this.updateQuantity(productId, newQuantity);
-        }
-      });
-    });
-
-    // Remove buttons
-    document.querySelectorAll(".remove-item").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const productId = e.target.dataset.id;
-        this.removeItem(productId);
-      });
-    });
-  }
-
-  // Initialize cart
-  init() {
-    this.updateCartCount();
-
-    // If on cart page, render cart
-    if (document.getElementById("cart-list")) {
-      this.renderCart();
-    }
-
-    // Add checkout functionality
-    const checkoutBtn = document.getElementById("checkout-btn");
-    if (checkoutBtn) {
-      checkoutBtn.addEventListener("click", () => {
-        alert("Checkout functionality coming soon! 🚀");
-      });
-    }
-  }
-}
-
-// Initialize cart when page loads
-document.addEventListener("DOMContentLoaded", function () {
-  window.cartManager = new CartManager();
+  updateCartCount();
 });

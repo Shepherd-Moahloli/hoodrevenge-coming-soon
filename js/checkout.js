@@ -275,9 +275,10 @@ document.addEventListener("DOMContentLoaded", function () {
     checkoutItems.innerHTML = cart
       .map((item) => {
         const price = item.price || 650;
+        const imageUrl = item.images ? item.images.main : item.image;
         return `
         <div class="checkout-item">
-          <img src="${item.image}" alt="${item.name}">
+          <img src="${imageUrl}" alt="${item.name}">
           <div class="item-info">
             <h4>${item.name}</h4>
             <p>Size: ${item.size || "M"} • Qty: ${item.quantity}</p>
@@ -430,11 +431,34 @@ document.addEventListener("DOMContentLoaded", function () {
     if (cardNumber) {
       cardNumber.addEventListener("input", function (e) {
         let value = e.target.value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-        let formattedInputValue = value.match(/.{1,4}/g)?.join(" ") || value;
 
-        if (formattedInputValue.length <= 19) {
-          e.target.value = formattedInputValue;
+        // Limit to 19 digits max
+        value = value.substring(0, 19);
+
+        // Format with spaces every 4 digits
+        let formattedValue = value.match(/.{1,4}/g)?.join(" ") || value;
+
+        e.target.value = formattedValue;
+
+        // Real-time validation feedback
+        if (value.length >= 13) {
+          const cardType = getCardType(value);
+          const isValid = luhnCheck(value);
+
+          if (isValid && cardType !== "unknown") {
+            e.target.classList.remove("input-error");
+            e.target.classList.add("input-valid");
+            showCardTypeIcon(cardType);
+          } else {
+            e.target.classList.add("input-error");
+            e.target.classList.remove("input-valid");
+            hideCardTypeIcon();
+          }
+        } else {
+          e.target.classList.remove("input-error", "input-valid");
+          hideCardTypeIcon();
         }
+
         clearFieldError(e.target);
       });
     }
@@ -456,7 +480,35 @@ document.addEventListener("DOMContentLoaded", function () {
     const cvv = document.getElementById("cvv");
     if (cvv) {
       cvv.addEventListener("input", function (e) {
-        e.target.value = e.target.value.replace(/\D/g, "");
+        let value = e.target.value.replace(/\D/g, "");
+
+        // Get current card number to determine CVV length
+        const cardNumberField = document.getElementById("cardNumber");
+        const cardNumber = cardNumberField
+          ? cardNumberField.value.replace(/\s/g, "")
+          : "";
+        const cardType = getCardType(cardNumber);
+
+        // Limit CVV length based on card type
+        const maxLength = cardType === "amex" ? 4 : 3;
+        value = value.substring(0, maxLength);
+
+        e.target.value = value;
+
+        // Update placeholder based on card type
+        e.target.placeholder = cardType === "amex" ? "1234" : "123";
+
+        // Real-time validation
+        if (value.length === maxLength) {
+          e.target.classList.remove("input-error");
+          e.target.classList.add("input-valid");
+        } else if (value.length > 0) {
+          e.target.classList.add("input-error");
+          e.target.classList.remove("input-valid");
+        } else {
+          e.target.classList.remove("input-error", "input-valid");
+        }
+
         clearFieldError(e.target);
       });
     }
@@ -755,32 +807,53 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // Step 2: Payment Processing
-    updateProgressStep(2);
-
-    const btn = document.getElementById("place-order-btn");
-    btn.innerHTML = "⏳ Processing Payment...";
-    btn.disabled = true;
-    btn.classList.add("loading");
-
     try {
-      console.log("💳 Processing payment...");
-
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      console.log("📧 Testing basic email first...");
-
-      // Test basic email first
-      const basicTest = await testBasicEmail();
-      console.log("🧪 Basic test result:", basicTest);
-
-      if (!basicTest) {
-        throw new Error("Basic EmailJS test failed");
+      console.log("💳 Starting payment validation...");
+      
+      // Step 2: Payment Processing
+      updateProgressStep(2);
+      
+      const btn = document.getElementById("place-order-btn");
+      btn.innerHTML = "⏳ Validating Card...";
+      btn.disabled = true;
+      btn.classList.add("loading");
+      
+      // Enhanced card validation
+      if (formData.paymentMethod === "card") {
+        if (!validateCardDetails(formData)) {
+          // Reset button state
+          btn.innerHTML = `Place Order - ${calculateOrderTotal(cart)}`;
+          btn.disabled = false;
+          btn.classList.remove("loading");
+          updateProgressStep(1);
+          return;
+        }
+        
+        // Process payment
+        btn.innerHTML = "💳 Processing Payment...";
+        const cartTotal = calculateOrderTotal(cart);
+        const paymentResult = await processPayment(formData, cartTotal);
+        
+        if (!paymentResult.success) {
+          // Handle payment failure
+          handlePaymentError(paymentResult, btn, cart);
+          return;
+        }
+        
+        // Payment successful - store transaction details
+        console.log("✅ Payment successful!");
+        console.log("💰 Transaction ID:", paymentResult.transactionId);
+        console.log("🔐 Auth Code:", paymentResult.authCode);
+        
+        // Add payment info to form data for email
+        formData.transactionId = paymentResult.transactionId;
+        formData.authCode = paymentResult.authCode;
+        formData.chargedAmount = paymentResult.chargedAmount;
       }
-
-      console.log("📧 Basic test passed, sending order emails...");
-
+      
+      // Continue with email sending...
+      btn.innerHTML = "📧 Sending Confirmation...";
+      
       // Send business notification email (to you)
       const businessEmailSent = await sendBusinessOrderNotification(
         formData,
@@ -815,7 +888,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // ❌ REMOVED THE ALERT POPUP - Just redirect after delay
           setTimeout(() => {
             window.location.href = "shop.html";
-          }, 8000); // Longer delay to see the nice confirmation screen
+          }, 10000); // 10 seconds
         }, 2000);
       } else {
         console.error("❌ Business email failed - not completing order");
@@ -843,37 +916,277 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Replace the validateCardDetails function with this relaxed version for testing
+  // Add this BEFORE the processOrder function
+
+  // PAYMENT PROCESSING SIMULATION
+  async function processPayment(formData, cartTotal) {
+    console.log("💳 Processing payment...");
+
+    // Extract numeric total (remove 'R' and convert to number)
+    const totalAmount = parseFloat(cartTotal.replace("R", ""));
+    console.log(`💰 Total amount to charge: R${totalAmount}`);
+
+    // Simulate different payment scenarios based on card number
+    const cardNumber = formData.cardNumber.replace(/\s/g, "");
+    const lastFourDigits = cardNumber.slice(-4);
+
+    // SIMULATE DIFFERENT CARD SCENARIOS
+    const paymentResult = await simulateCardPayment(
+      cardNumber,
+      totalAmount,
+      formData
+    );
+
+    return paymentResult;
+  }
+
+  // REALISTIC PAYMENT SIMULATION
+  async function simulateCardPayment(cardNumber, amount, formData) {
+    console.log("🏦 Contacting bank for authorization...");
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    const lastFour = cardNumber.slice(-4);
+
+    // SIMULATION RULES based on last 4 digits of card:
+    // 0000-2999: Successful payment
+    // 3000-4999: Insufficient funds
+    // 5000-6999: Card declined/blocked
+    // 7000-8999: Network/technical error
+    // 9000-9999: Successful payment with bonus
+
+    const lastFourNum = parseInt(lastFour);
+
+    if (lastFourNum >= 0 && lastFourNum <= 2999) {
+      // SUCCESS - Sufficient funds
+      return {
+        success: true,
+        transactionId: generateTransactionId(),
+        authCode: generateAuthCode(),
+        message: "Payment successful",
+        accountBalance: generateRandomBalance(amount + 1000), // Simulate balance after payment
+        chargedAmount: amount,
+      };
+    } else if (lastFourNum >= 3000 && lastFourNum <= 4999) {
+      // INSUFFICIENT FUNDS
+      const availableBalance = Math.random() * (amount - 50); // Random amount less than total
+      return {
+        success: false,
+        error: "INSUFFICIENT_FUNDS",
+        message: `Insufficient funds. Available: R${availableBalance.toFixed(
+          2
+        )}, Required: R${amount.toFixed(2)}`,
+        availableBalance: availableBalance,
+        requiredAmount: amount,
+      };
+    } else if (lastFourNum >= 5000 && lastFourNum <= 6999) {
+      // CARD DECLINED
+      return {
+        success: false,
+        error: "CARD_DECLINED",
+        message:
+          "Card declined. Please contact your bank or try a different payment method.",
+      };
+    } else if (lastFourNum >= 7000 && lastFourNum <= 8999) {
+      // TECHNICAL ERROR
+      return {
+        success: false,
+        error: "TECHNICAL_ERROR",
+        message: "Technical error occurred. Please try again in a few minutes.",
+      };
+    } else {
+      // SUCCESS WITH BONUS MESSAGE
+      return {
+        success: true,
+        transactionId: generateTransactionId(),
+        authCode: generateAuthCode(),
+        message: "Payment successful! Thank you for choosing HoodRevenge.",
+        accountBalance: generateRandomBalance(amount + 2000),
+        chargedAmount: amount,
+        bonus: true,
+      };
+    }
+  }
+
+  // UTILITY FUNCTIONS
+  function generateTransactionId() {
+    return "HR" + Date.now().toString() + Math.floor(Math.random() * 1000);
+  }
+
+  function generateAuthCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  function generateRandomBalance(minBalance) {
+    return minBalance + Math.random() * 5000; // Add random amount above minimum
+  }
+
+  // Replace the existing validateCardDetails function with this comprehensive version:
   function validateCardDetails(data) {
-    console.log("🧪 TESTING MODE: Card validation relaxed");
+    console.log("💳 Validating card details...");
 
-    // Basic format checks only (not strict validation)
+    clearAllErrors(); // Clear previous errors
+
     const cardNumber = data.cardNumber.replace(/\s/g, "");
+    let isValid = true;
 
-    // Just check if it looks like a card number
-    if (cardNumber.length < 13 || cardNumber.length > 19) {
-      alert("❌ Card number must be between 13-19 digits");
-      document.getElementById("cardNumber").focus();
+    // 1. CARD NUMBER VALIDATION
+    if (!validateCardNumber(cardNumber)) {
+      showFieldError(
+        "cardNumber",
+        "Invalid card number. Please check your card details."
+      );
+      isValid = false;
+    }
+
+    // 2. EXPIRY DATE VALIDATION
+    if (!validateExpiryDate(data.expiryDate)) {
+      showFieldError(
+        "expiryDate",
+        "Invalid or expired card. Please check expiry date."
+      );
+      isValid = false;
+    }
+
+    // 3. CVV VALIDATION
+    if (!validateCVV(data.cvv, cardNumber)) {
+      showFieldError(
+        "cvv",
+        "Invalid CVV. Please check your card security code."
+      );
+      isValid = false;
+    }
+
+    // 4. CARDHOLDER NAME VALIDATION (if you add this field)
+    const cardholderName = `${data.firstName} ${data.lastName}`.toUpperCase();
+    if (cardholderName.length < 3) {
+      showFieldError("firstName", "Cardholder name is required.");
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  // ADVANCED CARD NUMBER VALIDATION using Luhn Algorithm
+  function validateCardNumber(cardNumber) {
+    // Remove all spaces and non-digits
+    const cleanNumber = cardNumber.replace(/\D/g, "");
+
+    // Check length (13-19 digits for most cards)
+    if (cleanNumber.length < 13 || cleanNumber.length > 19) {
       return false;
     }
 
-    // Check if expiry date format is correct
-    if (!data.expiryDate || !data.expiryDate.includes("/")) {
-      alert("❌ Please enter expiry date in MM/YY format");
-      document.getElementById("expiryDate").focus();
+    // Identify card type and validate accordingly
+    const cardType = getCardType(cleanNumber);
+    console.log("💳 Detected card type:", cardType);
+
+    if (cardType === "unknown") {
       return false;
     }
 
-    // Check if CVV is present
-    if (!data.cvv || data.cvv.length < 3) {
-      alert("❌ Please enter a valid CVV (3-4 digits)");
-      document.getElementById("cvv").focus();
+    // Luhn Algorithm validation
+    return luhnCheck(cleanNumber);
+  }
+
+  // CARD TYPE DETECTION
+  function getCardType(cardNumber) {
+    const patterns = {
+      visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
+      mastercard:
+        /^5[1-5][0-9]{14}$|^2(?:2(?:2[1-9]|[3-9][0-9])|[3-6][0-9][0-9]|7(?:[01][0-9]|20))[0-9]{12}$/,
+      amex: /^3[47][0-9]{13}$/,
+      discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
+      dinersclub: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
+      jcb: /^(?:2131|1800|35[0-9]{3})[0-9]{11}$/,
+    };
+
+    for (const [type, pattern] of Object.entries(patterns)) {
+      if (pattern.test(cardNumber)) {
+        return type;
+      }
+    }
+
+    return "unknown";
+  }
+
+  // LUHN ALGORITHM - Industry standard for card validation
+  function luhnCheck(cardNumber) {
+    let sum = 0;
+    let alternate = false;
+
+    // Process digits from right to left
+    for (let i = cardNumber.length - 1; i >= 0; i--) {
+      let n = parseInt(cardNumber.charAt(i), 10);
+
+      if (alternate) {
+        n *= 2;
+        if (n > 9) {
+          n = (n % 10) + 1;
+        }
+      }
+
+      sum += n;
+      alternate = !alternate;
+    }
+
+    return sum % 10 === 0;
+  }
+
+  // EXPIRY DATE VALIDATION
+  function validateExpiryDate(expiryDate) {
+    if (!expiryDate || !expiryDate.includes("/")) {
       return false;
     }
 
-    // For testing - accept any properly formatted card
-    console.log("✅ Card details format accepted (testing mode)");
+    const [month, year] = expiryDate.split("/");
+
+    // Check format
+    if (!month || !year || month.length !== 2 || year.length !== 2) {
+      return false;
+    }
+
+    const monthNum = parseInt(month, 10);
+    const yearNum = parseInt("20" + year, 10); // Convert YY to 20YY
+
+    // Validate month range
+    if (monthNum < 1 || monthNum > 12) {
+      return false;
+    }
+
+    // Check if card is expired
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1; // getMonth() is 0-indexed
+
+    if (
+      yearNum < currentYear ||
+      (yearNum === currentYear && monthNum < currentMonth)
+    ) {
+      return false;
+    }
+
+    // Don't allow cards expiring more than 10 years in future
+    if (yearNum > currentYear + 10) {
+      return false;
+    }
+
     return true;
+  }
+
+  // CVV VALIDATION
+  function validateCVV(cvv, cardNumber) {
+    if (!cvv) return false;
+
+    const cardType = getCardType(cardNumber);
+
+    // American Express has 4-digit CVV, others have 3-digit
+    if (cardType === "amex") {
+      return /^\d{4}$/.test(cvv);
+    } else {
+      return /^\d{3}$/.test(cvv);
+    }
   }
 
   // Enhanced function that sends to both you AND the customer
@@ -1223,20 +1536,3 @@ document.addEventListener("DOMContentLoaded", function () {
           0
         ) * 1.15;
       orderItemsContainer.innerHTML += `
-        <div style="border-top: 1px solid #ddd; padding-top: 0.5rem; margin-top: 1rem; font-weight: bold;">
-          <div style="display: flex; justify-content: space-between;">
-            <span>Total (incl. VAT):</span>
-            <span>R${total.toFixed(2)}</span>
-          </div>
-        </div>
-      `;
-    }
-
-    // Show the confirmation section
-    const confirmationSection = document.getElementById("order-confirmation");
-    if (confirmationSection) {
-      confirmationSection.style.display = "block";
-      confirmationSection.classList.add("active");
-    }
-  }
-});

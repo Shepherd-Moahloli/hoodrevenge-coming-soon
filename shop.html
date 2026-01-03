@@ -22,9 +22,13 @@
           />
         </div>
         <ul class="nav-menu">
-          <li><a href="shop.html">Shop</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="contact.html">Contact</a></li>
+          <li>
+            <a
+              href="#products-section"
+              onclick="scrollToProducts(); return false;"
+              >Shop</a
+            >
+          </li>
           <li style="background: none">
             <a href="cart.html" class="cart-link"
               >Cart (<span id="cart-count">0</span>)</a
@@ -70,20 +74,28 @@
         <h2>HOOD - SEASON 01</h2>
         <div class="products-grid">
           <!-- Product 1 -->
-          <div class="product-card">
-            <img
-              src="images/Free_T-Shirt_Mockup.jpg"
-              alt="Classic Hoodie"
-              class="product-img"
-            />
+          <div class="product-card" data-id="1">
+            <div class="product-image-container">
+              <img
+                src="images/Artboard 1.jpg"
+                alt="Tie-Dye Hoodie - Green/Yellow"
+                class="product-main-image"
+              />
+              <!-- Image switcher buttons -->
+              <div class="image-controls">
+                <button class="image-btn active" data-image="main">
+                  Front
+                </button>
+                <button class="image-btn" data-image="back">Back</button>
+                <button class="image-btn" data-image="closeup">Detail</button>
+              </div>
+            </div>
             <div class="product-info">
-              <h3>Classic Hoodie</h3>
-              <p class="price">R650</p>
+              <h3 class="product-name">Tie-Dye Hoodie - Green/Yellow</h3>
+              <p class="product-price">R650</p>
               <button
-                class="add-to-cart"
-                data-id="1"
-                data-name="Classic Hoodie"
-                data-price="650"
+                class="add-to-cart-btn"
+                onclick="addToCart(1, 'Tie-Dye Hoodie - Green/Yellow', 650, {main: 'images/Artboard 1.jpg', back: 'images/Artboard 1 copy.jpg', closeup: 'images/Artboard 1 copy 2.jpg'}, 'M')"
               >
                 Add to Cart
               </button>
@@ -91,105 +103,55 @@
           </div>
 
           <!-- Product 2 -->
-          <div class="product-card">
-            <img
-              src="images/Hoodie-Mockup-NEW.png"
-              alt="Logo T-Shirt"
-              class="product-img"
-            />
+          <div class="product-card" data-id="2">
+            <div class="product-image-container">
+              <img
+                src="images/Artboard 1 copy 3.jpg"
+                alt="Tie-Dye Hoodie - Design 2"
+                class="product-main-image"
+              />
+              <div class="image-controls">
+                <button class="image-btn active" data-image="main">
+                  Front
+                </button>
+                <button class="image-btn" data-image="back">Back</button>
+                <button class="image-btn" data-image="closeup">Detail</button>
+              </div>
+            </div>
             <div class="product-info">
-              <h3>Logo T-Shirt</h3>
-              <p class="price">R850</p>
+              <h3 class="product-name">Tie-Dye Hoodie - Design 2</h3>
+              <p class="product-price">R650</p>
               <button
-                class="add-to-cart"
-                data-id="2"
-                data-name="Logo T-Shirt"
-                data-price="850"
+                class="add-to-cart-btn"
+                onclick="addToCart(2, 'Tie-Dye Hoodie - Design 2', 650, {main: 'images/Artboard 1 copy 3.jpg', back: 'images/Artboard 1 copy 4.jpg', closeup: 'images/Artboard 1 copy 5.jpg'}, 'M')"
               >
                 Add to Cart
               </button>
             </div>
           </div>
 
-          <!-- Product 3 -->
-          <div class="product-card">
-            <img
-              src="images/Women_Sleevless_T-Shirt_Mockup_1.jpg"
-              alt="Street Jacket"
-              class="product-img"
-            />
-            <div class="product-info">
-              <h3>Street Jacket</h3>
-              <p class="price">R800</p>
-              <button
-                class="add-to-cart"
-                data-id="3"
-                data-name="Street Jacket"
-                data-price="800"
-              >
-                Add to Cart
-              </button>
+          <!-- Product 3 - Fixed image mapping -->
+          <div class="product-card" data-id="3">
+            <div class="product-image-container">
+              <img
+                src="images/Artboard 1 copy 6.jpg"
+                alt="Tie-Dye Hoodie - Design 3"
+                class="product-main-image"
+              />
+              <div class="image-controls">
+                <button class="image-btn active" data-image="main">
+                  Front
+                </button>
+                <button class="image-btn" data-image="back">Back</button>
+                <button class="image-btn" data-image="closeup">Detail</button>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="products-grid">
-          <!-- Product 1 -->
-          <div class="product-card">
-            <img
-              src="images/Free_T-Shirt_Mockup.jpg"
-              alt="Classic Hoodie"
-              class="product-img"
-            />
             <div class="product-info">
-              <h3>Classic Hoodie</h3>
-              <p class="price">R650</p>
+              <h3 class="product-name">Tie-Dye Hoodie - Design 3</h3>
+              <p class="product-price">R650</p>
               <button
-                class="add-to-cart"
-                data-id="1"
-                data-name="Classic Hoodie"
-                data-price="650"
-              >
-                Add to Cart
-              </button>
-            </div>
-          </div>
-
-          <!-- Product 2 -->
-          <div class="product-card">
-            <img
-              src="images/Hoodie-Mockup-NEW.png"
-              alt="Logo T-Shirt"
-              class="product-img"
-            />
-            <div class="product-info">
-              <h3>Logo T-Shirt</h3>
-              <p class="price">R850</p>
-              <button
-                class="add-to-cart"
-                data-id="2"
-                data-name="Logo T-Shirt"
-                data-price="850"
-              >
-                Add to Cart
-              </button>
-            </div>
-          </div>
-
-          <!-- Product 3 -->
-          <div class="product-card">
-            <img
-              src="images/Women_Sleevless_T-Shirt_Mockup_1.jpg"
-              alt="Street Jacket"
-              class="product-img"
-            />
-            <div class="product-info">
-              <h3>Street Jacket</h3>
-              <p class="price">R800</p>
-              <button
-                class="add-to-cart"
-                data-id="3"
-                data-name="Street Jacket"
-                data-price="800"
+                class="add-to-cart-btn"
+                onclick="addToCart(3, 'Tie-Dye Hoodie - Design 3', 650, {main: 'images/Artboard 1 copy 6.jpg', back: 'images/Artboard 1 copy 6-1.jpg', closeup: 'images/Artboard 1 copy 6-2.jpg'}, 'M')"
               >
                 Add to Cart
               </button>
@@ -210,8 +172,3 @@
     <script src="js/cart.js"></script>
   </body>
 </html>
-<!-- Replace the hero section (lines 27-53) with: -->
-
-<script>
-// Debug version - let's see what's happening with prices
-
