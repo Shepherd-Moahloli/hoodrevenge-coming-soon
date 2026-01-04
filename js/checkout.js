@@ -149,6 +149,33 @@ const SA_LOCATIONS = {
   ],
 };
 
+// ENVIRONMENT CONFIGURATION
+const CONFIG = {
+  // Change this to 'production' when going live
+  environment: "development", // or 'production'
+
+  development: {
+    paymentProcessor: "simulation",
+    emailNotifications: true,
+    debugMode: true,
+    businessEmail: "shepherdmoahloli122@gmail.com",
+  },
+
+  production: {
+    paymentProcessor: "fnb-paygate", // FNB's system
+    paygate: {
+      paygate_id: "YOUR_FNB_PAYGATE_ID", // They'll provide this
+      secret_key: "YOUR_FNB_SECRET_KEY", // They'll provide this
+      api_url: "https://secure.fnb.co.za/payweb3/initiate.trans", // Or similar
+    },
+  },
+};
+
+// Get current environment config
+function getConfig() {
+  return CONFIG[CONFIG.environment];
+}
+
 // Checkout Page JavaScript
 document.addEventListener("DOMContentLoaded", function () {
   console.log("🛒 Checkout page loaded");
@@ -172,39 +199,6 @@ document.addEventListener("DOMContentLoaded", function () {
     navbar.style.background = "rgba(255, 255, 255, 0.95)";
     navbar.style.backdropFilter = "blur(15px)";
     navbar.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
-
-    // Update nav menu colors for white background
-    const navLinks = document.querySelectorAll(".nav-menu a");
-    navLinks.forEach((link) => {
-      link.style.color = "#2c2c2c !important";
-      link.style.textShadow = "none";
-    });
-
-    // Style the cart link specifically
-    const cartLink = document.querySelector(".cart-link");
-    if (cartLink) {
-      cartLink.style.color = "#2c2c2c !important";
-      cartLink.style.background = "none";
-      cartLink.style.padding = "0.5rem 1rem";
-      cartLink.style.borderRadius = "25px";
-      cartLink.style.border = "1px solid #2c2c2c";
-      cartLink.style.transition = "all 0.3s ease";
-    }
-
-    // Add hover effects for nav links
-    navLinks.forEach((link) => {
-      link.addEventListener("mouseenter", function () {
-        if (!this.classList.contains("cart-link")) {
-          this.style.color = "#666 !important";
-        }
-      });
-
-      link.addEventListener("mouseleave", function () {
-        if (!this.classList.contains("cart-link")) {
-          this.style.color = "#2c2c2c !important";
-        }
-      });
-    });
 
     // Cart link hover effect
     if (cartLink) {
@@ -809,15 +803,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
       console.log("💳 Starting payment validation...");
-      
+
       // Step 2: Payment Processing
       updateProgressStep(2);
-      
+
       const btn = document.getElementById("place-order-btn");
       btn.innerHTML = "⏳ Validating Card...";
       btn.disabled = true;
       btn.classList.add("loading");
-      
+
       // Enhanced card validation
       if (formData.paymentMethod === "card") {
         if (!validateCardDetails(formData)) {
@@ -828,32 +822,32 @@ document.addEventListener("DOMContentLoaded", function () {
           updateProgressStep(1);
           return;
         }
-        
+
         // Process payment
         btn.innerHTML = "💳 Processing Payment...";
         const cartTotal = calculateOrderTotal(cart);
         const paymentResult = await processPayment(formData, cartTotal);
-        
+
         if (!paymentResult.success) {
           // Handle payment failure
           handlePaymentError(paymentResult, btn, cart);
           return;
         }
-        
+
         // Payment successful - store transaction details
         console.log("✅ Payment successful!");
         console.log("💰 Transaction ID:", paymentResult.transactionId);
         console.log("🔐 Auth Code:", paymentResult.authCode);
-        
+
         // Add payment info to form data for email
         formData.transactionId = paymentResult.transactionId;
         formData.authCode = paymentResult.authCode;
         formData.chargedAmount = paymentResult.chargedAmount;
       }
-      
+
       // Continue with email sending...
       btn.innerHTML = "📧 Sending Confirmation...";
-      
+
       // Send business notification email (to you)
       const businessEmailSent = await sendBusinessOrderNotification(
         formData,
@@ -1536,3 +1530,120 @@ document.addEventListener("DOMContentLoaded", function () {
           0
         ) * 1.15;
       orderItemsContainer.innerHTML += `
+        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 0.5rem;">
+          <span>Total</span>
+          <span>R${total.toFixed(2)}</span>
+        </div>
+      `;
+    }
+
+    // Show the confirmation section
+    const confirmationSection = document.getElementById("order-confirmation");
+    if (confirmationSection) {
+      confirmationSection.style.display = "block";
+    }
+
+    // Scroll to top of the page
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  // PRODUCTION: Replace simulation with real PayGate integration
+  async function processRealPayment(formData, cartTotal) {
+    console.log("💳 Processing REAL payment via PayGate...");
+
+    const totalAmount = parseFloat(cartTotal.replace("R", ""));
+
+    // PayGate API call structure (you'll get these from FNB)
+    const paymentData = {
+      // FNB PayGate credentials (you'll get these after approval)
+      paygate_id: "YOUR_PAYGATE_ID", // From FNB
+      reference: generateTransactionId(),
+      amount: Math.round(totalAmount * 100), // Convert to cents
+      currency: "ZAR",
+      return_url: `${window.location.origin}/checkout-success.html`,
+      transaction_date: new Date().toISOString().slice(0, 19).replace("T", " "),
+
+      // Customer details
+      email: formData.email,
+
+      // Security checksum (PayGate requires this)
+      checksum: generatePayGateChecksum({
+        paygate_id: "YOUR_PAYGATE_ID",
+        reference: generateTransactionId(),
+        amount: Math.round(totalAmount * 100),
+        currency: "ZAR",
+      }),
+    };
+
+    try {
+      // Make secure API call to PayGate
+      const response = await fetch(
+        "https://secure.paygate.co.za/payweb3/initiate.trans",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams(paymentData),
+        }
+      );
+
+      const result = await response.text();
+      console.log("PayGate Response:", result);
+
+      // Parse PayGate response
+      const responseData = parsePayGateResponse(result);
+
+      if (responseData.pay_request_id) {
+        // Redirect to PayGate payment page
+        window.location.href = `https://secure.paygate.co.za/payweb3/process.trans?PAY_REQUEST_ID=${responseData.pay_request_id}`;
+        return { success: true, redirect: true };
+      } else {
+        return {
+          success: false,
+          error: "PAYMENT_INITIATION_FAILED",
+          message: "Could not initiate payment. Please try again.",
+        };
+      }
+    } catch (error) {
+      console.error("PayGate API Error:", error);
+      return {
+        success: false,
+        error: "NETWORK_ERROR",
+        message: "Network error. Please check your connection and try again.",
+      };
+    }
+  }
+
+  // PayGate checksum generator (security requirement)
+  function generatePayGateChecksum(data) {
+    // You'll get the secret key from FNB
+    const secret = "YOUR_PAYGATE_SECRET"; // From FNB
+
+    // Create string for hashing
+    const checksumString = Object.values(data).join("") + secret;
+
+    // Generate MD5 hash (PayGate requirement)
+    return md5(checksumString);
+  }
+
+  // Simple MD5 function for checksums (or use crypto-js library)
+  function md5(string) {
+    // You can use the crypto-js library or implement MD5
+    // For now, returning placeholder - install crypto-js for production
+    return "placeholder_checksum";
+  }
+
+  // Parse PayGate response
+  function parsePayGateResponse(responseString) {
+    const params = new URLSearchParams(responseString);
+    return {
+      pay_request_id: params.get("PAY_REQUEST_ID"),
+      reference: params.get("REFERENCE"),
+      checksum: params.get("CHECKSUM"),
+    };
+  }
+});
