@@ -253,3 +253,160 @@ document.addEventListener("DOMContentLoaded", function () {
 
   updateCartCount();
 });
+
+// Updated product catalog with new image sequences
+const PRODUCT_CATALOG = {
+  1: {
+    id: 1,
+    name: "Tie-Dye Hoodie - Blue Design",
+    price: 650,
+    images: {
+      main: "images/Artboard 1 copy 8.jpg",
+      back: "images/Artboard 1 copy 8-1.jpg",
+      closeup: "images/Artboard 1 copy 8-2.jpg",
+    },
+  },
+  2: {
+    id: 2,
+    name: "Tie-Dye Hoodie - Design 2",
+    price: 650,
+    images: {
+      main: "images/Artboard 1 copy 3.jpg",
+      back: "images/Artboard 1 copy 4.jpg",
+      closeup: "images/Artboard 1 copy 5.jpg",
+    },
+  },
+  3: {
+    id: 3,
+    name: "Tie-Dye Hoodie - Design 3",
+    price: 650,
+    images: {
+      main: "images/Artboard 1 copy 6.jpg",
+      back: "images/Artboard 1 copy 6-1.jpg",
+      closeup: "images/Artboard 1 copy 6-2.jpg",
+    },
+  },
+  4: {
+    id: 4,
+    name: "Tie-Dye Hoodie - Green/Yellow",
+    price: 650,
+    images: {
+      main: "images/Artboard 1.jpg",
+      back: "images/Artboard 1 copy.jpg",
+      closeup: "images/Artboard 1 copy 2.jpg",
+    },
+  },
+  5: {
+    id: 5,
+    name: "Tie-Dye Hoodie - Blue Highlighted Design",
+    price: 650,
+    images: {
+      main: "images/Artboard 1 copy 7.jpg",
+      back: "images/Artboard 1 copy 7-1.jpg",
+      closeup: "images/Artboard 1 copy 7-2.jpg",
+    },
+  },
+  6: {
+    id: 6,
+    name: "Tie-Dye Hoodie - Design 6",
+    price: 650,
+    images: {
+      main: "images/Artboard 1 copy 6.jpg",
+      back: "images/Artboard 1 copy 6-1.jpg",
+      closeup: "images/Artboard 1 copy 6-2.jpg",
+    },
+  },
+};
+
+function addToCart(productId, productName, price, images, size = "M") {
+  // USE THE SAME KEY AS THE REST OF THE FILE!
+  let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+
+  // Check if product with same ID and size already exists
+  const existingItemIndex = cart.findIndex(
+    (item) => item.id === productId && item.size === size
+  );
+
+  if (existingItemIndex > -1) {
+    // Increase quantity
+    cart[existingItemIndex].quantity += 1;
+  } else {
+    // Add new item - USE PRODUCT_CATALOG for correct images
+    const productData = PRODUCT_CATALOG[productId];
+    const correctImages = productData ? productData.images : images;
+
+    cart.push({
+      id: productId,
+      name: productName,
+      price: price,
+      images: correctImages, // Use the correct images from catalog
+      size: size,
+      quantity: 1,
+    });
+  }
+
+  // USE THE SAME KEY!
+  localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+  updateCartCount();
+
+  // Show success message
+  showAddToCartMessage(productName);
+}
+
+// ALSO UPDATE these functions to use the same key:
+function removeFromCart(productId, size) {
+  let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  cart = cart.filter((item) => !(item.id === productId && item.size === size));
+  localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+
+  if (typeof loadCartItems === "function") {
+    loadCartItems();
+  }
+  updateCartCount();
+}
+
+function updateQuantity(productId, size, newQuantity) {
+  let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+
+  const itemIndex = cart.findIndex(
+    (item) => item.id === productId && item.size === size
+  );
+
+  if (itemIndex > -1) {
+    if (newQuantity <= 0) {
+      cart.splice(itemIndex, 1);
+    } else {
+      cart[itemIndex].quantity = newQuantity;
+    }
+
+    localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+
+    if (typeof loadCartItems === "function") {
+      loadCartItems();
+    }
+    updateCartCount();
+  }
+}
+
+function getCartTotal() {
+  const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+}
+
+function getCartItemCount() {
+  const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  return cart.reduce((count, item) => count + item.quantity, 0);
+}
+
+// UPDATE the updateCartCount function too:
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  const count = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+
+  const cartCountElements = document.querySelectorAll("#cart-count");
+  cartCountElements.forEach((element) => {
+    element.textContent = count;
+  });
+
+  console.log(`🔢 Cart count updated to: ${count}`);
+}

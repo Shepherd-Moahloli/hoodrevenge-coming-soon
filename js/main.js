@@ -1,15 +1,83 @@
 /* filepath: js/main.js */
+// Updated product catalog with new image sequences
+const PRODUCT_CATALOG = {
+  1: {
+    id: 1,
+    name: "Tie-Dye Hoodie - Blue Design",
+    price: 650,
+    images: {
+      main: "images/Artboard 1 copy 8.jpg",
+      back: "images/Artboard 1 copy 8-1.jpg",
+      closeup: "images/Artboard 1 copy 8-2.jpg",
+    },
+  },
+  2: {
+    id: 2,
+    name: "Tie-Dye Hoodie - Design 2",
+    price: 650,
+    images: {
+      main: "images/Artboard 1 copy 3.jpg",
+      back: "images/Artboard 1 copy 4.jpg",
+      closeup: "images/Artboard 1 copy 5.jpg",
+    },
+  },
+  3: {
+    id: 3,
+    name: "Tie-Dye Hoodie - Design 3",
+    price: 650,
+    images: {
+      main: "images/Artboard 1 copy 6.jpg",
+      back: "images/Artboard 1 copy 6-1.jpg",
+      closeup: "images/Artboard 1 copy 6-2.jpg",
+    },
+  },
+  4: {
+    id: 4,
+    name: "Tie-Dye Hoodie - Green/Yellow",
+    price: 650,
+    images: {
+      main: "images/Artboard 1.jpg",
+      back: "images/Artboard 1 copy.jpg",
+      closeup: "images/Artboard 1 copy 2.jpg",
+    },
+  },
+  5: {
+    id: 5,
+    name: "Tie-Dye Hoodie - Blue Highlighted Design",
+    price: 650,
+    images: {
+      main: "images/Artboard 1 copy 7.jpg",
+      back: "images/Artboard 1 copy 7-1.jpg",
+      closeup: "images/Artboard 1 copy 7-2.jpg",
+    },
+  },
+  6: {
+    id: 6,
+    name: "Tie-Dye Hoodie - Design 6",
+    price: 650,
+    images: {
+      main: "images/Artboard 1 copy 6.jpg",
+      back: "images/Artboard 1 copy 6-1.jpg",
+      closeup: "images/Artboard 1 copy 6-2.jpg",
+    },
+  },
+};
+
 function scrollToProducts() {
-  document.getElementById("products-section").scrollIntoView({
-    behavior: "smooth",
-  });
+  const productsSection = document.getElementById("products-section");
+  if (productsSection) {
+    productsSection.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
 }
 
 function redirectToShop() {
   window.location.href = "shop.html";
 }
 
-// GLOBAL addToCart function - MOVE THIS OUTSIDE THE CONDITIONAL
+// GLOBAL addToCart function
 window.addToCart = function (id, name, price, images, size = "M") {
   console.log("🔥 ADD TO CART CALLED", { id, name, price, images, size });
 
@@ -31,14 +99,7 @@ window.addToCart = function (id, name, price, images, size = "M") {
       size: size,
       quantity: 1,
     });
-    console.log("Added new item to cart:", {
-      id: parseInt(id),
-      name: name,
-      price: price,
-      images: images,
-      size: size,
-      quantity: 1,
-    });
+    console.log("Added new item to cart");
   }
 
   localStorage.setItem("hoodrevenge-cart", JSON.stringify(cartData));
@@ -50,140 +111,300 @@ window.addToCart = function (id, name, price, images, size = "M") {
 document.addEventListener("DOMContentLoaded", function () {
   console.log("🚀 Main.js DOMContentLoaded fired");
 
-  // Enhanced cursor-following zoom effect
-  const productImages = document.querySelectorAll(".product-main-image");
+  // Initialize navbar
+  initNavbar();
 
-  productImages.forEach((img) => {
-    const zoomOverlay = document.createElement("div");
-    zoomOverlay.className = "zoom-overlay";
-    document.body.appendChild(zoomOverlay);
-
-    img.addEventListener("mouseenter", function (e) {
-      zoomOverlay.classList.add("active");
-      zoomOverlay.style.backgroundImage = `url(${this.src})`;
-      zoomOverlay.style.backgroundSize = "400%";
-    });
-
-    img.addEventListener("mousemove", function (e) {
-      const rect = this.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      const xPercent = (x / rect.width) * 100;
-      const yPercent = (y / rect.height) * 100;
-
-      zoomOverlay.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
-      zoomOverlay.style.left = `${e.clientX}px`;
-      zoomOverlay.style.top = `${e.clientY}px`;
-    });
-
-    img.addEventListener("mouseleave", function () {
-      zoomOverlay.classList.remove("active");
-    });
-  });
-
-  // Cart Management System - Only run on shop page
-  if (document.querySelector(".products-grid")) {
-    console.log("🛒 Cart system initializing");
-  }
+  // Initialize product image switching
+  initializeProductImageSwitching();
 
   // Initialize cart count
   updateCartCount();
 });
 
-// Precise video overlay scroll detection with logo swap
-window.addEventListener("scroll", function () {
+function initNavbar() {
   const navbar = document.querySelector(".navbar");
-  const videoOverlay = document.querySelector(".video-overlay");
   const logo = document.querySelector(".logo img");
+  const navLinks = document.querySelectorAll(".nav-menu a");
+  const cartLink = document.querySelector(".cart-link");
 
-  if (videoOverlay) {
-    const overlayRect = videoOverlay.getBoundingClientRect();
-    const overlayBottom = overlayRect.bottom;
+  // Set initial navbar state based on page background
+  if (
+    document.body.classList.contains("white-bg") ||
+    window.location.pathname.includes("cart.html") ||
+    window.location.pathname.includes("checkout.html")
+  ) {
+    // White background pages
+    navbar.style.background = "rgba(255, 255, 255, 0.95)";
+    navbar.style.backdropFilter = "blur(15px)";
+    navbar.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
 
-    if (overlayBottom < 100) {
+    if (logo) {
+      logo.src = "images/hood-logo-black.png";
+    }
+
+    navLinks.forEach((link) => {
+      link.style.color = "#2c2c2c";
+    });
+  }
+
+  // Cart link hover effects
+  if (cartLink) {
+    cartLink.addEventListener("mouseenter", function () {
+      this.style.background = "#2c2c2c";
+      this.style.color = "#ffffff !important";
+    });
+
+    cartLink.addEventListener("mouseleave", function () {
+      this.style.background = "none";
+      this.style.color = "#2c2c2c !important";
+    });
+  }
+
+  // Scroll behavior
+  window.addEventListener("scroll", function () {
+    if (window.scrollY > 100) {
       navbar.classList.add("scrolled");
+      navbar.style.background = "rgba(255, 255, 255, 0.98)";
+      navbar.style.backdropFilter = "blur(20px)";
+      navbar.style.boxShadow = "0 4px 30px rgba(0, 0, 0, 0.15)";
+
       if (logo) {
         logo.src = "images/hood-logo-black.png";
       }
+
+      navLinks.forEach((link) => {
+        link.style.color = "#2c2c2c";
+      });
     } else {
       navbar.classList.remove("scrolled");
-      if (logo) {
-        logo.src = "images/hood-logo.png";
+
+      if (!document.body.classList.contains("white-bg")) {
+        navbar.style.background = "rgba(255, 255, 255, 0.1)";
+        navbar.style.backdropFilter = "blur(15px)";
+        navbar.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
+
+        if (logo) {
+          logo.src = "images/hood-logo.png";
+        }
+
+        navLinks.forEach((link) => {
+          link.style.color = "#ffffff";
+        });
       }
     }
-  } else {
-    if (window.scrollY > 600) {
-      navbar.classList.add("scrolled");
-      if (logo) {
-        logo.src = "images/hood-logo-black.png";
-      }
-    } else {
-      navbar.classList.remove("scrolled");
-      if (logo) {
-        logo.src = "images/hood-logo.png";
-      }
+  });
+}
+
+function initializeProductImageSwitching() {
+  console.log("🔄 Setting up image switching and zoom effects...");
+
+  // Add click handlers for all image control buttons
+  document.querySelectorAll(".product-card").forEach((card) => {
+    const productId = parseInt(card.dataset.id);
+    const mainImage = card.querySelector(".product-main-image");
+    const imageButtons = card.querySelectorAll(".image-btn");
+    const imageContainer = card.querySelector(".product-image-container");
+
+    // Get the correct images from PRODUCT_CATALOG
+    const productImages = PRODUCT_CATALOG[productId]?.images;
+
+    if (!productImages) {
+      console.log(`❌ No images found for product ${productId}`);
+      return;
     }
+
+    console.log(`✅ Setting up Product ${productId}:`, productImages);
+
+    // Initialize zoom effect for this product
+    createZoomEffect(imageContainer, mainImage);
+
+    // Image switching buttons
+    imageButtons.forEach((button) => {
+      button.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Remove active class from all buttons in this product
+        imageButtons.forEach((btn) => btn.classList.remove("active"));
+
+        // Add active class to clicked button
+        this.classList.add("active");
+
+        // Get the image type and update the main image
+        const imageType = this.dataset.image;
+        const newImageSrc = productImages[imageType];
+
+        console.log(
+          `🔄 Switching Product ${productId} to ${imageType}: ${newImageSrc}`
+        );
+
+        if (newImageSrc && mainImage) {
+          // Add fade effect
+          mainImage.style.opacity = "0.5";
+          mainImage.src = newImageSrc;
+
+          // Update zoom result image too
+          const zoomResultImg =
+            imageContainer.querySelector(".zoom-result img");
+          if (zoomResultImg) {
+            zoomResultImg.src = newImageSrc;
+          }
+
+          // Restore opacity after image loads
+          mainImage.onload = function () {
+            this.style.opacity = "1";
+          };
+        }
+      });
+    });
+  });
+}
+
+// REPLACE your createZoomEffect function with this OPTIMIZED version:
+function createZoomEffect(container, mainImage) {
+  // Skip if zoom already exists
+  if (container.querySelector(".zoom-circle")) {
+    console.log("Zoom effect already exists for this container");
+    return;
   }
-});
 
-// Product data array
-const products = [
-  {
-    id: 1,
-    name: "Tie-Dye Hoodie - Green/Yellow",
-    price: 650,
-    images: {
-      main: "images/Artboard 1.jpg",
-      back: "images/Artboard 1 copy.jpg",
-      closeup: "images/Artboard 1 copy 2.jpg",
-    },
-  },
-  {
-    id: 2,
-    name: "Tie-Dye Hoodie - Design 2",
-    price: 650,
-    images: {
-      main: "images/Artboard 1 copy 3.jpg",
-      back: "images/Artboard 1 copy 4.jpg",
-      closeup: "images/Artboard 1 copy 5.jpg",
-    },
-  },
-  {
-    id: 3,
-    name: "Tie-Dye Hoodie - Design 3",
-    price: 650,
-    images: {
-      main: "images/Artboard 1 copy 6.jpg",
-      back: "images/Artboard 1 copy 6-1.jpg",
-      closeup: "images/Artboard 1 copy 6-2.jpg",
-    },
-  },
-];
+  console.log("🔍 Creating zoom effect...");
 
-// Image switching functionality
-document.addEventListener("click", function (e) {
-  if (e.target.classList.contains("image-btn")) {
-    const productCard = e.target.closest(".product-card");
-    const productId = productCard.dataset.id;
-    const product = products.find((p) => p.id == productId);
-    const imageType = e.target.dataset.image;
+  // Create circular zoom window that follows mouse - SMALLER SIZE
+  const zoomCircle = document.createElement("div");
+  zoomCircle.className = "zoom-circle";
+  zoomCircle.style.cssText = `
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 
+      0 0 0 2px rgba(44, 44, 44, 0.9),
+      0 6px 20px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    z-index: 1000;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    overflow: hidden;
+    background: transparent;
+  `;
 
-    if (product && product.images[imageType]) {
-      const mainImage = productCard.querySelector(".product-main-image");
-      mainImage.src = product.images[imageType];
+  // Create zoomed image inside the circle - REDUCED ZOOM
+  const zoomImg = document.createElement("img");
+  zoomImg.src = mainImage.src;
+  zoomImg.alt = mainImage.alt;
+  zoomImg.style.cssText = `
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    object-fit: none;
+    pointer-events: none;
+    transform-origin: 0 0;
+  `;
+  zoomCircle.appendChild(zoomImg);
 
-      productCard
-        .querySelectorAll(".image-btn")
-        .forEach((btn) => btn.classList.remove("active"));
-      e.target.classList.add("active");
-    }
+  // Add "ZOOM" label above the circle - SMALLER
+  const zoomLabel = document.createElement("div");
+  zoomLabel.textContent = "ZOOM";
+  zoomLabel.style.cssText = `
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2c2c2c;
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    z-index: 1001;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  `;
+  zoomCircle.appendChild(zoomLabel);
+
+  container.appendChild(zoomCircle);
+
+  // OPTIMIZED Mouse move handler - smaller circle, less zoom
+  function handleMouseMove(e) {
+    const rect = container.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Keep circle within image bounds
+    const circleRadius = 60;
+    const clampedX = Math.max(
+      circleRadius,
+      Math.min(rect.width - circleRadius, x)
+    );
+    const clampedY = Math.max(
+      circleRadius,
+      Math.min(rect.height - circleRadius, y)
+    );
+
+    // Position zoom circle at mouse cursor
+    zoomCircle.style.left = clampedX + "px";
+    zoomCircle.style.top = clampedY + "px";
+
+    // SIMPLIFIED & FAST: Direct pixel-based zoom calculation
+    const zoomFactor = 2; // 2x zoom for clear visibility
+
+    // Set zoomed image size (no complex calculations)
+    zoomImg.style.width = rect.width * zoomFactor + "px";
+    zoomImg.style.height = rect.height * zoomFactor + "px";
+
+    // DIRECT positioning - much faster
+    const offsetX = x * zoomFactor - circleRadius;
+    const offsetY = y * zoomFactor - circleRadius;
+
+    // Apply positioning with transform for best performance
+    zoomImg.style.transform = `translate(-${offsetX}px, -${offsetY}px)`;
   }
-});
+
+  // Mouse enter handler
+  function handleMouseEnter(e) {
+    zoomCircle.style.opacity = "1";
+    container.style.cursor = "none"; // Hide cursor when zoom is active
+    handleMouseMove(e); // Position immediately
+  }
+
+  // Mouse leave handler
+  function handleMouseLeave() {
+    zoomCircle.style.opacity = "0";
+    container.style.cursor = "default"; // Restore cursor
+  }
+
+  // Add event listeners
+  container.addEventListener("mouseenter", handleMouseEnter);
+  container.addEventListener("mousemove", handleMouseMove);
+  container.addEventListener("mouseleave", handleMouseLeave);
+
+  // Update zoom image when main image changes
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === "attributes" && mutation.attributeName === "src") {
+        zoomImg.src = mainImage.src;
+        console.log("🔄 Updated zoom image:", mainImage.src);
+      }
+    });
+  });
+
+  observer.observe(mainImage, {
+    attributes: true,
+    attributeFilter: ["src"],
+  });
+
+  console.log("✅ Circular zoom effect created successfully");
+}
 
 // Utility functions
 function updateCartCount() {
-  const cartData = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]"); // Changed from 'cart' to 'cartData'
+  const cartData = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
   const count = cartData.reduce(
     (total, item) => total + (item.quantity || 1),
     0
@@ -198,7 +419,10 @@ function updateCartCount() {
 }
 
 function showAddToCartMessage(productName) {
-  const product = products.find((p) => p.name === productName);
+  // Find product in PRODUCT_CATALOG (not the old products array)
+  const product = Object.values(PRODUCT_CATALOG).find(
+    (p) => p.name === productName
+  );
   const productImage = product
     ? product.images.main
     : "images/default-product.jpg";
@@ -241,4 +465,63 @@ function showAddToCartMessage(productName) {
     notification.style.transform = "translateX(400px)";
     setTimeout(() => document.body.removeChild(notification), 300);
   }, 4000);
+}
+
+// Export functions for use in other files
+window.scrollToProducts = scrollToProducts;
+window.updateCartCount = updateCartCount;
+
+// FIXED zoom styles - removed white background
+const zoomStyles = `
+  .product-image-container {
+    position: relative;
+    overflow: visible !important;
+    border-radius: 12px;
+  }
+  
+  .product-image-container:hover {
+    z-index: 1000;
+  }
+  
+  .product-main-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+    transition: opacity 0.2s ease;
+  }
+
+  .zoom-circle {
+    background: transparent !important;
+    backdrop-filter: none !important;
+  }
+
+  .zoom-circle img {
+    border-radius: 0 !important;
+  }
+  
+  @media (max-width: 768px) {
+    .zoom-circle {
+      width: 120px !important;
+      height: 120px !important;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .zoom-circle {
+      display: none !important;
+    }
+    
+    .product-image-container {
+      cursor: pointer !important;
+    }
+  }
+`;
+
+// Inject styles
+if (!document.getElementById("zoom-styles")) {
+  const styleSheet = document.createElement("style");
+  styleSheet.id = "zoom-styles";
+  styleSheet.textContent = zoomStyles;
+  document.head.appendChild(styleSheet);
 }
