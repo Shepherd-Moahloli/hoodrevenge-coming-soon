@@ -410,3 +410,22 @@ function updateCartCount() {
 
   console.log(`🔢 Cart count updated to: ${count}`);
 }
+
+// ADD this to your existing cart.js
+function proceedToCheckout() {
+  const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+
+  // Store cart for checkout page
+  localStorage.setItem("checkout-cart", JSON.stringify(cart));
+
+  // Redirect to checkout
+  window.location.href = "checkout.html";
+}
+
+// UPDATE your checkout button in cart.html
+// <button onclick="proceedToCheckout()" class="checkout-btn">Proceed to Checkout</button>
