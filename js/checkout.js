@@ -575,16 +575,34 @@ function calculateTotals(cart) {
     return sum + price * item.quantity;
   }, 0);
 
-  const vat = subtotal * 0.15;
-  const shipping = 0;
+  const vat = subtotal * 0.15; // 15% VAT
+  const shipping = 0; // FREE shipping
   const total = subtotal + vat + shipping;
 
-  // Update totals display
+  // Update totals display to match what PayFast receives
   updateElement("checkout-subtotal", `R${subtotal.toFixed(2)}`);
   updateElement("checkout-vat", `R${vat.toFixed(2)}`);
+  updateElement("checkout-shipping", "FREE");
   updateElement("checkout-total", `R${total.toFixed(2)}`);
 
-  console.log("💰 Totals calculated - Total:", total);
+  // 🔥 UPDATE PayFast button text with correct total
+  updateElement(
+    "payfast-amount",
+    `Pay Securely with PayFast - R${total.toFixed(2)}`
+  );
+  updateElement("button-total", `R${total.toFixed(2)}`);
+
+  console.log(
+    "💰 Totals calculated - Subtotal:",
+    subtotal,
+    "VAT:",
+    vat,
+    "Total:",
+    total
+  );
+
+  // Store totals globally for PayFast integration
+  window.checkoutTotals = { subtotal, vat, shipping, total };
 }
 
 function processCheckout() {
@@ -606,6 +624,8 @@ function processCheckout() {
     city: getValue("city"),
     postalCode: getValue("postalCode"),
   };
+
+  console.log("📋 Form data collected:", formData); // DEBUG LOG
 
   let isValid = true;
   let errorCount = 0;
@@ -647,63 +667,226 @@ function processCheckout() {
   }
 
   if (!isValid) {
-    // Show professional notification instead of alert
     const errorMessage = `Please fix ${errorCount} error${
       errorCount > 1 ? "s" : ""
     } in the form before continuing. Check the highlighted fields above.`;
     showNotification(errorMessage, "error", 8000);
 
-    // Scroll to first error field
     const firstErrorField = document.querySelector(".input-error");
     if (firstErrorField) {
       firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
       firstErrorField.focus();
     }
-
     return;
   }
 
-  // Get cart and calculate total
-  const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
-  const subtotal = cart.reduce(
-    (sum, item) => sum + (item.price || 650) * item.quantity,
-    0
-  );
-  const total = subtotal + subtotal * 0.15;
+  // 🔥 FIXED: Pass formData directly (not order object)
+  console.log("✅ Validation passed, calling PayFast with formData:", formData);
+  initiatePayFastPayment(formData); // PASS formData, not order!
+}
 
-  // Create order
-  const order = {
-    customer: formData,
-    items: cart,
-    subtotal: subtotal,
-    vat: subtotal * 0.15,
-    total: total,
-    orderNumber: "HR" + Date.now(),
-    date: new Date().toISOString(),
+// ALSO UPDATE your initiatePayFastPayment function:
+function initiatePayFastPayment(customerData) {
+  console.log("💳 PayFast called with customer data:", customerData);
+
+  const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+
+  // 🔥 Use the stored totals from calculateTotals function
+  const totals = window.checkoutTotals || {
+    subtotal: 650,
+    vat: 97.5,
+    shipping: 0,
+    total: 747.5,
   };
 
-  // Save order
-  localStorage.setItem("current-order", JSON.stringify(order));
+  console.log(`📊 Using stored pricing breakdown:
+    Subtotal: R${totals.subtotal.toFixed(2)}
+    Shipping: R${totals.shipping.toFixed(2)} (FREE)
+    VAT (15%): R${totals.vat.toFixed(2)}
+    TOTAL: R${totals.total.toFixed(2)}`);
 
-  // Process payment
-  if (window.initiatePayFastPayment) {
-    window.initiatePayFastPayment(order);
-  } else {
-    // Professional success notification instead of alert
-    showNotification(
-      `Order ${order.orderNumber} created successfully! Total: R${total.toFixed(
-        2
-      )}. PayFast integration coming soon!`,
-      "success",
-      4000
-    );
+  // 🔥 PayFast Official Form Data Structure
+  const payFastData = {
+    cmd: "_paynow",
+    receiver: "33273073",
 
-    // Clear cart and redirect after notification
-    setTimeout(() => {
-      localStorage.removeItem("hoodrevenge-cart");
-      window.location.href = "index.html";
-    }, 4000);
+    // 🎯 Use the correct calculated total
+    amount: totals.total.toFixed(2),
+    item_name: `HoodRevenge Order #${Date.now()}`,
+    item_description: cart
+      .map((item) => `${item.name} (${item.size}) x${item.quantity}`)
+      .join(", "),
+
+    // Customer details
+    name_first: customerData.firstName,
+    name_last: customerData.lastName,
+    email_address: customerData.email,
+
+    // Return URLs
+    return_url: "https://hoodrevenge.co.za/payment-success.html",
+    cancel_url: "https://hoodrevenge.co.za/payment-cancelled.html",
+    notify_url: "https://hoodrevenge.co.za/payment-notify",
+
+    // Shipping address
+    address_line1: `${customerData.firstName} ${customerData.lastName}`,
+    address_line2: customerData.phone,
+    shipping_city: customerData.city,
+    shipping_region: customerData.province,
+    postal_code: customerData.postalCode,
+
+    custom_quantity: "1",
+  };
+
+  console.log("💳 PayFast Data with CORRECT total:", payFastData);
+
+  // Save order for success page
+  localStorage.setItem(
+    "pending-order",
+    JSON.stringify({
+      customer: customerData,
+      items: cart,
+      subtotal: totals.subtotal,
+      shipping: totals.shipping,
+      vat: totals.vat,
+      total: totals.total,
+      orderNumber: `HR${Date.now()}`,
+    })
+  );
+
+  showNotification(
+    "Redirecting to PayFast secure checkout...",
+    "success",
+    3000
+  );
+
+  createPayFastForm(payFastData);
+}
+
+// Add PayFast's official validation functions at the top of your file
+function shippingRequiredPayFast(formReference) {
+  let cont = true;
+  for (let i = 0; i < formReference.elements.length; i++) {
+    if (formReference.elements[i].className !== "shipping") continue;
+    if (formReference.elements[i].name === "line2") continue;
+    if (!cont) continue;
+
+    if (formReference.elements[i].name === "country") {
+      if (formReference.elements[i].selectedIndex === 0) {
+        cont = false;
+        alert("Select a country");
+      }
+    } else {
+      if (
+        0 === formReference.elements[i].value.length ||
+        /^\s*$/.test(formReference.elements[i].value)
+      ) {
+        cont = false;
+        alert("Complete all the mandatory address fields");
+      }
+    }
   }
+  return cont;
+}
+
+function customQuantitiesPayFast(formReference) {
+  formReference["amount"].value =
+    formReference["amount"].value * formReference["custom_quantity"].value;
+  return true;
+}
+
+function actionPayFastJavascript(formReference) {
+  let shippingValid = shippingRequiredPayFast(formReference);
+  let shippingValidOrOff =
+    typeof shippingValid !== "undefined" ? shippingValid : true;
+  let customValid = shippingValidOrOff
+    ? customQuantitiesPayFast(formReference)
+    : false;
+
+  if (typeof shippingValid !== "undefined" && !shippingValid) {
+    return false;
+  }
+  if (typeof customValid !== "undefined" && !customValid) {
+    return false;
+  }
+  return true;
+}
+
+// Update your createPayFastForm function to include PayFast's validation
+function createPayFastForm(data) {
+  // Remove any existing form
+  const existingForm = document.getElementById("payfast-form");
+  if (existingForm) {
+    existingForm.remove();
+  }
+
+  // Create PayFast official form with their exact structure AND validation
+  const form = document.createElement("form");
+  form.id = "payfast-form";
+  form.method = "POST";
+  form.name = "PayFastPayNowForm";
+  form.action = "https://payment.payfast.io/eng/process";
+  form.style.display = "none";
+
+  // Add PayFast's onsubmit validation
+  form.onsubmit = function () {
+    return actionPayFastJavascript(this);
+  };
+
+  // Create PayFast official form structure with EXACT field names
+  form.innerHTML = `
+    <!-- PayFast required fields in their exact format -->
+    <input required type="hidden" name="cmd" value="_paynow">
+    <input required type="hidden" name="receiver" pattern="[0-9]" value="33273073">
+    <input type="hidden" name="return_url" value="${data.return_url}">
+    <input type="hidden" name="cancel_url" value="${data.cancel_url}">
+    <input type="hidden" name="notify_url" value="${data.notify_url}">
+    <input required type="hidden" name="amount" value="${data.amount}">
+    <input required type="hidden" name="item_name" maxlength="255" value="${
+      data.item_name
+    }">
+    <input type="hidden" name="item_description" maxlength="255" value="${
+      data.item_description
+    }">
+    
+    <!-- Quantity field (set to 1 since amount is pre-calculated) -->
+    <input required type="hidden" name="custom_quantity" value="1">
+    
+    <!-- Shipping address fields (using PayFast's exact field names) -->
+    <input type="hidden" name="line1" class="shipping" value="${
+      data.address_line1
+    }">
+    <input type="hidden" name="line2" class="shipping" value="${
+      data.address_line2 || ""
+    }">
+    <input type="hidden" name="city" class="shipping" value="${
+      data.shipping_city
+    }">
+    <input type="hidden" name="region" class="shipping" value="${
+      data.shipping_region
+    }">
+    <input type="hidden" name="country" class="shipping" value="South Africa">
+    <input type="hidden" name="code" class="shipping" value="${
+      data.postal_code
+    }">
+    
+    <!-- Customer name fields -->
+    <input type="hidden" name="name_first" value="${data.name_first}">
+    <input type="hidden" name="name_last" value="${data.name_last}">
+    <input type="hidden" name="email_address" value="${data.email_address}">
+  `;
+
+  document.body.appendChild(form);
+
+  console.log("🚀 Submitting PayFast OFFICIAL form with validation");
+  console.log("📋 Form action:", form.action);
+  console.log("📋 Form data being sent:", data);
+
+  form.submit();
 }
 
 // Helper functions

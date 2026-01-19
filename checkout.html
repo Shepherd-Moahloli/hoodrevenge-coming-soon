@@ -23,10 +23,8 @@
           />
         </div>
         <ul class="nav-menu">
-          <li><a href="index.html">Home</a></li>
           <li><a href="shop.html">Shop</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="contact.html">Contact</a></li>
+
           <li>
             <a href="cart.html" class="cart-link"
               >Cart (<span id="cart-count">0</span>)</a
@@ -131,21 +129,62 @@
             <!-- PayFast Payment Button -->
             <div class="form-section payment-section">
               <h3>Payment Method</h3>
-              <button
-                type="button"
-                class="payfast-btn"
-                id="payfast-checkout-btn"
+
+              <div
+                class="payfast-container"
+                style="
+                  padding: 20px;
+                  border: 1px solid #ddd;
+                  border-radius: 8px;
+                  background: #f9f9f9;
+                "
               >
-                <img
-                  src="images/payfast-logo.png"
-                  alt="PayFast"
-                  style="height: 24px; margin-right: 10px"
-                />
-                Pay Securely with PayFast
-              </button>
-              <p class="payment-info">
-                Your payment information is secure and encrypted
-              </p>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin-bottom: 10px;
+                  "
+                >
+                  <img
+                    src="https://my.payfast.io/images/buttons/logo-payfast-small.png"
+                    alt="PayFast"
+                    style="height: 24px"
+                  />
+                  <span
+                    id="payfast-amount"
+                    style="font-weight: bold; color: #2c2c2c"
+                    >Pay Securely with PayFast - R747.50</span
+                  >
+                </div>
+                <p style="margin: 0; font-size: 14px; color: #666">
+                  Your payment information is secure and encrypted
+                </p>
+
+                <!-- Dynamic PayFast Button -->
+                <button
+                  id="payfast-checkout-btn"
+                  type="button"
+                  style="
+                    width: 100%;
+                    background: linear-gradient(135deg, #007bff, #0056b3);
+                    color: white;
+                    border: none;
+                    padding: 15px 30px;
+                    border-radius: 6px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin-top: 15px;
+                    transition: all 0.3s ease;
+                  "
+                  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,123,255,0.3)'"
+                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                >
+                  🔒 Pay Now - <span id="button-total">R747.50</span>
+                </button>
+              </div>
             </div>
           </div>
 

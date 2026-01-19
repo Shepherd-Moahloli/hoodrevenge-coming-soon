@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Successful - HoodRevenge</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <style>
+      .success-section {
+        padding: 60px 0;
+        text-align: center;
+        background: #fff;
+      }
+      .success-icon {
+        font-size: 80px;
+        margin-bottom: 30px;
+        color: #27ae60;
+      }
+      .success-section h1 {
+        color: #27ae60;
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+      }
+      .success-section p {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 20px;
+      }
+      .order-details {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 12px;
+        margin: 30px auto;
+        max-width: 600px;
+        text-align: left;
+      }
+      .order-details h3 {
+        margin-bottom: 20px;
+        color: #2c2c2c;
+      }
+      .actions {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 40px;
+      }
+      .cta-btn {
+        display: inline-block;
+        padding: 15px 30px;
+        background: #27ae60;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .cta-btn:hover {
+        background: #219a52;
+        transform: translateY(-2px);
+      }
+      .cta-btn.secondary {
+        background: transparent;
+        border: 2px solid #2c2c2c;
+        color: #2c2c2c;
+      }
+      .cta-btn.secondary:hover {
+        background: #2c2c2c;
+        color: white;
+      }
+    </style>
+  </head>
+  <body class="white-bg">
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="logo">
+          <a href="shop.html">
+            <img
+              src="images/hood-logo-black.png"
+              alt="HoodRevenge Logo"
+              style="height: 100px"
+            />
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <section class="success-section">
+      <div class="container">
+        <div class="success-icon">✅</div>
+        <h1>Payment Successful!</h1>
+        <p>Thank you for your purchase! Your order has been confirmed.</p>
+        <p>
+          You will receive an email confirmation shortly with your order
+          details.
+        </p>
+
+        <div class="order-details" id="order-summary">
+          <h3>Order Summary</h3>
+          <p>
+            <strong>Order Number:</strong>
+            <span id="order-number">Loading...</span>
+          </p>
+          <p>
+            <strong>Total:</strong> <span id="order-total">Loading...</span>
+          </p>
+          <p>
+            <strong>Items:</strong> <span id="order-items">Loading...</span>
+          </p>
+          <p>
+            <strong>Delivery Address:</strong>
+            <span id="delivery-address">Loading...</span>
+          </p>
+        </div>
+
+        <div class="actions">
+          <a href="shop.html" class="cta-btn">Continue Shopping</a>
+          <a href="index.html" class="cta-btn secondary">Back to Home</a>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // Load order details from localStorage
+      document.addEventListener("DOMContentLoaded", function () {
+        const pendingOrder = localStorage.getItem("pending-order");
+
+        if (pendingOrder) {
+          const order = JSON.parse(pendingOrder);
+
+          // Display order details
+          document.getElementById("order-number").textContent =
+            order.orderNumber || "HR" + Date.now();
+          document.getElementById("order-total").textContent =
+            "R" + (order.total || 0).toFixed(2);
+          document.getElementById("order-items").textContent = order.items
+            ? order.items
+                .map((item) => `${item.name} (${item.size})`)
+                .join(", ")
+            : "HoodRevenge Items";
+          document.getElementById("delivery-address").textContent = `${
+            order.customer?.city || "City"
+          }, ${order.customer?.province || "Province"}`;
+
+          // Clear the pending order
+          localStorage.removeItem("pending-order");
+
+          // Clear the cart since payment was successful
+          localStorage.removeItem("hoodrevenge-cart");
+
+          console.log("✅ Order completed:", order);
+        }
+      });
+    </script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
