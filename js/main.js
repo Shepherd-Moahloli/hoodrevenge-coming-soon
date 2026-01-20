@@ -84,7 +84,7 @@ window.addToCart = function (id, name, price, images, size = "M") {
   const cartData = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
 
   const existingItem = cartData.find(
-    (item) => item.id == id && item.size === size
+    (item) => item.id == id && item.size === size,
   );
 
   if (existingItem) {
@@ -235,7 +235,7 @@ function initializeProductImageSwitching() {
         const newImageSrc = productImages[imageType];
 
         console.log(
-          `🔄 Switching Product ${productId} to ${imageType}: ${newImageSrc}`
+          `🔄 Switching Product ${productId} to ${imageType}: ${newImageSrc}`,
         );
 
         if (newImageSrc && mainImage) {
@@ -260,8 +260,16 @@ function initializeProductImageSwitching() {
   });
 }
 
-// REPLACE your createZoomEffect function with this OPTIMIZED version:
+// REPLACE your createZoomEffect function with this FIXED version:
 function createZoomEffect(container, mainImage) {
+  // Skip zoom on mobile devices completely
+  const isMobile = window.innerWidth <= 768 || "ontouchstart" in window;
+
+  if (isMobile) {
+    console.log("📱 Skipping zoom on mobile device");
+    return;
+  }
+
   // Skip if zoom already exists
   if (container.querySelector(".zoom-circle")) {
     console.log("Zoom effect already exists for this container");
@@ -270,20 +278,20 @@ function createZoomEffect(container, mainImage) {
 
   console.log("🔍 Creating zoom effect...");
 
-  // Create circular zoom window that follows mouse - SMALLER SIZE
+  // Create circular zoom window that follows mouse - PROPERLY CONTAINED
   const zoomCircle = document.createElement("div");
   zoomCircle.className = "zoom-circle";
   zoomCircle.style.cssText = `
     position: absolute;
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     border: 3px solid #ffffff;
     border-radius: 50%;
     box-shadow: 
       0 0 0 2px rgba(44, 44, 44, 0.9),
       0 6px 20px rgba(0, 0, 0, 0.4);
     pointer-events: none;
-    z-index: 1000;
+    z-index: 100;
     transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity 0.2s ease;
@@ -291,7 +299,7 @@ function createZoomEffect(container, mainImage) {
     background: transparent;
   `;
 
-  // Create zoomed image inside the circle - REDUCED ZOOM
+  // Create zoomed image inside the circle
   const zoomImg = document.createElement("img");
   zoomImg.src = mainImage.src;
   zoomImg.alt = mainImage.alt;
@@ -307,7 +315,7 @@ function createZoomEffect(container, mainImage) {
   `;
   zoomCircle.appendChild(zoomImg);
 
-  // Add "ZOOM" label above the circle - SMALLER
+  // Add "ZOOM" label above the circle
   const zoomLabel = document.createElement("div");
   zoomLabel.textContent = "ZOOM";
   zoomLabel.style.cssText = `
@@ -323,66 +331,99 @@ function createZoomEffect(container, mainImage) {
     font-weight: 600;
     letter-spacing: 1px;
     white-space: nowrap;
-    z-index: 1001;
+    z-index: 101;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
   `;
   zoomCircle.appendChild(zoomLabel);
 
   container.appendChild(zoomCircle);
 
-  // OPTIMIZED Mouse move handler - smaller circle, less zoom
+  // 🔥 FIXED: Mouse move handler with PROPER BOUNDARIES
   function handleMouseMove(e) {
     const rect = container.getBoundingClientRect();
+    const imageRect = mainImage.getBoundingClientRect();
+
+    // Get mouse position relative to container
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    // Keep circle within image bounds
-    const circleRadius = 60;
+    // 🎯 CRITICAL FIX: Keep lens INSIDE image boundaries only
+    const circleRadius = 50; // Half of lens width (100px / 2)
+    const imageWidth = imageRect.width;
+    const imageHeight = imageRect.height;
+
+    // Clamp position to stay within IMAGE bounds (not container bounds)
     const clampedX = Math.max(
       circleRadius,
-      Math.min(rect.width - circleRadius, x)
+      Math.min(imageWidth - circleRadius, x),
     );
     const clampedY = Math.max(
       circleRadius,
-      Math.min(rect.height - circleRadius, y)
+      Math.min(imageHeight - circleRadius, y),
     );
 
-    // Position zoom circle at mouse cursor
+    // 🚫 BOUNDARY CHECK: Only show lens if mouse is over the IMAGE
+    const mouseOverImage =
+      x >= 0 && x <= imageWidth && y >= 0 && y <= imageHeight;
+
+    if (!mouseOverImage) {
+      zoomCircle.style.opacity = "0";
+      return;
+    }
+
+    // Position zoom circle at clamped coordinates
     zoomCircle.style.left = clampedX + "px";
     zoomCircle.style.top = clampedY + "px";
+    zoomCircle.style.opacity = "1";
 
-    // SIMPLIFIED & FAST: Direct pixel-based zoom calculation
-    const zoomFactor = 2; // 2x zoom for clear visibility
+    // Calculate zoom positioning
+    const zoomFactor = 2.5; // Slightly higher zoom
 
-    // Set zoomed image size (no complex calculations)
-    zoomImg.style.width = rect.width * zoomFactor + "px";
-    zoomImg.style.height = rect.height * zoomFactor + "px";
+    // Set zoomed image size
+    zoomImg.style.width = imageWidth * zoomFactor + "px";
+    zoomImg.style.height = imageHeight * zoomFactor + "px";
 
-    // DIRECT positioning - much faster
-    const offsetX = x * zoomFactor - circleRadius;
-    const offsetY = y * zoomFactor - circleRadius;
+    // Position zoomed image
+    const offsetX = clampedX * zoomFactor - circleRadius;
+    const offsetY = clampedY * zoomFactor - circleRadius;
 
-    // Apply positioning with transform for best performance
     zoomImg.style.transform = `translate(-${offsetX}px, -${offsetY}px)`;
   }
 
-  // Mouse enter handler
+  // 🔥 FIXED: Mouse enter handler
   function handleMouseEnter(e) {
-    zoomCircle.style.opacity = "1";
-    container.style.cursor = "none"; // Hide cursor when zoom is active
-    handleMouseMove(e); // Position immediately
+    const rect = container.getBoundingClientRect();
+    const imageRect = mainImage.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Only activate if mouse is over the actual image
+    if (x >= 0 && x <= imageRect.width && y >= 0 && y <= imageRect.height) {
+      container.style.cursor = "none";
+      handleMouseMove(e);
+    }
   }
 
-  // Mouse leave handler
-  function handleMouseLeave() {
+  // 🔥 FIXED: Mouse leave handler
+  function handleMouseLeave(e) {
     zoomCircle.style.opacity = "0";
-    container.style.cursor = "default"; // Restore cursor
+    container.style.cursor = "default";
   }
 
-  // Add event listeners
+  // Add event listeners with improved detection
   container.addEventListener("mouseenter", handleMouseEnter);
   container.addEventListener("mousemove", handleMouseMove);
   container.addEventListener("mouseleave", handleMouseLeave);
+
+  // 🎯 ADDITIONAL: Hide zoom when mouse moves to buttons area
+  const imageControlBtns =
+    container.parentElement.querySelector(".image-controls");
+  if (imageControlBtns) {
+    imageControlBtns.addEventListener("mouseenter", function () {
+      zoomCircle.style.opacity = "0";
+      container.style.cursor = "default";
+    });
+  }
 
   // Update zoom image when main image changes
   const observer = new MutationObserver((mutations) => {
@@ -399,7 +440,7 @@ function createZoomEffect(container, mainImage) {
     attributeFilter: ["src"],
   });
 
-  console.log("✅ Circular zoom effect created successfully");
+  console.log("✅ Zoom effect created with PROPER boundaries");
 }
 
 // Utility functions
@@ -407,12 +448,17 @@ function updateCartCount() {
   const cartData = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
   const count = cartData.reduce(
     (total, item) => total + (item.quantity || 1),
-    0
+    0,
   );
 
-  const cartCountElements = document.querySelectorAll("#cart-count");
+  // Update both desktop and mobile cart counts
+  const cartCountElements = document.querySelectorAll(
+    "#cart-count, #mobile-cart-count",
+  );
   cartCountElements.forEach((element) => {
-    element.textContent = count;
+    if (element) {
+      element.textContent = count;
+    }
   });
 
   console.log("Updated cart count to:", count);
@@ -421,7 +467,7 @@ function updateCartCount() {
 function showAddToCartMessage(productName) {
   // Find product in PRODUCT_CATALOG (not the old products array)
   const product = Object.values(PRODUCT_CATALOG).find(
-    (p) => p.name === productName
+    (p) => p.name === productName,
   );
   const productImage = product
     ? product.images.main
@@ -525,3 +571,134 @@ if (!document.getElementById("zoom-styles")) {
   styleSheet.textContent = zoomStyles;
   document.head.appendChild(styleSheet);
 }
+
+// ========== MOBILE MENU FUNCTIONS ==========
+
+// Mobile Menu Toggle Function - WITH COLOR FORCING
+function toggleMobileMenu() {
+  const mobileMenuOverlay = document.getElementById("mobileMenuOverlay");
+  const mobileMenuToggle = document.querySelector(".mobile-menu-toggle");
+  const body = document.body;
+  const navbarLogo = document.querySelector(".navbar .logo img");
+  const hamburgerSpans = document.querySelectorAll(".hamburger-icon span");
+
+  // Toggle active classes
+  mobileMenuOverlay.classList.toggle("active");
+  mobileMenuToggle.classList.toggle("active");
+
+  // Prevent/allow body scrolling
+  if (mobileMenuOverlay.classList.contains("active")) {
+    body.classList.add("mobile-menu-open");
+
+    // 🔥 FORCE BLACK colors when menu opens
+    if (navbarLogo) {
+      navbarLogo.style.filter = "brightness(0)";
+    }
+    hamburgerSpans.forEach((span) => {
+      span.style.background = "#2c2c2c";
+    });
+  } else {
+    body.classList.remove("mobile-menu-open");
+
+    // 🔥 RESTORE original colors when menu closes
+    if (navbarLogo) {
+      navbarLogo.style.filter = ""; // Reset to original
+    }
+    // Re-sync hamburger color with current scroll state
+    syncHamburgerColor();
+  }
+
+  console.log("🍔 Mobile menu toggled with color sync");
+}
+
+// Update cart count in mobile menu too
+function updateCartCount() {
+  const cartData = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  const count = cartData.reduce(
+    (total, item) => total + (item.quantity || 1),
+    0,
+  );
+
+  // Update both desktop and mobile cart counts
+  const cartCountElements = document.querySelectorAll(
+    "#cart-count, #mobile-cart-count",
+  );
+  cartCountElements.forEach((element) => {
+    if (element) {
+      element.textContent = count;
+    }
+  });
+
+  console.log("Updated cart count to:", count);
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener("DOMContentLoaded", function () {
+  const mobileMenuOverlay = document.getElementById("mobileMenuOverlay");
+
+  if (mobileMenuOverlay) {
+    mobileMenuOverlay.addEventListener("click", function (e) {
+      if (e.target === mobileMenuOverlay) {
+        toggleMobileMenu();
+      }
+    });
+  }
+});
+
+// Close mobile menu on escape key press
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") {
+    const mobileMenuOverlay = document.getElementById("mobileMenuOverlay");
+    if (mobileMenuOverlay && mobileMenuOverlay.classList.contains("active")) {
+      toggleMobileMenu();
+    }
+  }
+});
+
+// Make toggleMobileMenu globally accessible
+window.toggleMobileMenu = toggleMobileMenu;
+
+// ========== HAMBURGER ICON COLOR SYNC ==========
+
+// Function to sync hamburger color with logo - SIMPLE CORRECT LOGIC
+function syncHamburgerColor() {
+  const navbar = document.querySelector(".navbar");
+  const hamburgerSpans = document.querySelectorAll(".hamburger-icon span");
+
+  if (navbar && hamburgerSpans.length > 0) {
+    // 🎯 SIMPLE LOGIC: Match hamburger color to logo color
+    if (navbar.classList.contains("scrolled")) {
+      // 🔥 BLACK hamburger when scrolled (BLACK logo shown)
+      hamburgerSpans.forEach((span) => {
+        span.style.background = "#2c2c2c";
+      });
+    } else {
+      // 🔥 WHITE hamburger when not scrolled (WHITE logo shown)
+      hamburgerSpans.forEach((span) => {
+        span.style.background = "#ffffff";
+      });
+    }
+  }
+}
+
+// Update the existing scroll event listener to include hamburger sync
+document.addEventListener("scroll", function () {
+  const navbar = document.querySelector(".navbar");
+  if (navbar) {
+    if (window.scrollY > 50) {
+      navbar.classList.add("scrolled");
+    } else {
+      navbar.classList.remove("scrolled");
+    }
+
+    // Sync hamburger color with navbar state
+    syncHamburgerColor();
+  }
+});
+
+// Initial sync on page load
+document.addEventListener("DOMContentLoaded", function () {
+  syncHamburgerColor();
+});
+
+// ========== END HAMBURGER COLOR SYNC ==========

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -18,23 +18,71 @@
           <img
             src="images/hood-logo.png"
             alt="HoodRevenge Logo"
-            style="height: 100px"
+            style="height: 80px"
           />
         </div>
-        <ul class="nav-menu">
-          <li>
+
+        <!-- Desktop Navigation -->
+        <div class="nav-menu desktop-nav">
+          <a href="index.html">HOME</a>
+          <a href="#products-section" onclick="scrollToProducts()">SHOP</a>
+          <a href="about.html">ABOUT</a>
+          <a href="contact.html">CONTACT</a>
+        </div>
+
+        <!-- Desktop Cart -->
+        <div class="nav-actions desktop-nav">
+          <a href="cart.html" class="cart-link">
+            CART (<span id="cart-count">0</span>)
+          </a>
+        </div>
+
+        <!-- Mobile Menu Toggle Button -->
+        <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+          <div class="hamburger-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Full-Screen Menu - WITH FIXED LOGO -->
+      <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <div class="mobile-menu-content">
+          <!-- 🔥 FIXED: Logo positioned on left side - FORCE BLACK -->
+          <div class="mobile-menu-header">
+            <img
+              src="images/hood-logo.png"
+              alt="HoodRevenge"
+              class="mobile-logo"
+              style="
+                height: 80px;
+                width: auto;
+                filter: brightness(0) !important;
+              "
+            />
+          </div>
+
+          <!-- Centered navigation links -->
+          <div class="mobile-menu-links">
             <a
               href="#products-section"
-              onclick="scrollToProducts(); return false;"
-              >Shop</a
+              onclick="
+                scrollToProducts();
+                toggleMobileMenu();
+              "
+              >SHOP</a
             >
-          </li>
-          <li style="background: none">
-            <a href="cart.html" class="cart-link"
-              >Cart (<span id="cart-count">0</span>)</a
+            <a
+              href="cart.html"
+              class="mobile-cart-link"
+              onclick="toggleMobileMenu()"
             >
-          </li>
-        </ul>
+              CART (<span id="mobile-cart-count">0</span>)
+            </a>
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -94,7 +142,19 @@
               <p class="product-price">R650</p>
               <button
                 class="add-to-cart-btn"
-                onclick="addToCart(1, 'Tie-Dye Hoodie - Blue Design', 650, {main: 'images/Artboard 1 copy 8.jpg', back: 'images/Artboard 1 copy 8-1.jpg', closeup: 'images/Artboard 1 copy 8-2.jpg'}, 'M')"
+                onclick="
+                  addToCart(
+                    1,
+                    'Tie-Dye Hoodie - Blue Design',
+                    650,
+                    {
+                      main: 'images/Artboard 1 copy 8.jpg',
+                      back: 'images/Artboard 1 copy 8-1.jpg',
+                      closeup: 'images/Artboard 1 copy 8-2.jpg',
+                    },
+                    'M',
+                  )
+                "
               >
                 Add to Cart
               </button>
@@ -122,7 +182,19 @@
               <p class="product-price">R650</p>
               <button
                 class="add-to-cart-btn"
-                onclick="addToCart(2, 'Tie-Dye Hoodie - Design 2', 650, {main: 'images/Artboard 1 copy 3.jpg', back: 'images/Artboard 1 copy 4.jpg', closeup: 'images/Artboard 1 copy 5.jpg'}, 'M')"
+                onclick="
+                  addToCart(
+                    2,
+                    'Tie-Dye Hoodie - Design 2',
+                    650,
+                    {
+                      main: 'images/Artboard 1 copy 3.jpg',
+                      back: 'images/Artboard 1 copy 4.jpg',
+                      closeup: 'images/Artboard 1 copy 5.jpg',
+                    },
+                    'M',
+                  )
+                "
               >
                 Add to Cart
               </button>
@@ -150,7 +222,19 @@
               <p class="product-price">R650</p>
               <button
                 class="add-to-cart-btn"
-                onclick="addToCart(3, 'Tie-Dye Hoodie - Design 3', 650, {main: 'images/Artboard 1 copy 6.jpg', back: 'images/Artboard 1 copy 6-1.jpg', closeup: 'images/Artboard 1 copy 6-2.jpg'}, 'M')"
+                onclick="
+                  addToCart(
+                    3,
+                    'Tie-Dye Hoodie - Design 3',
+                    650,
+                    {
+                      main: 'images/Artboard 1 copy 6.jpg',
+                      back: 'images/Artboard 1 copy 6-1.jpg',
+                      closeup: 'images/Artboard 1 copy 6-2.jpg',
+                    },
+                    'M',
+                  )
+                "
               >
                 Add to Cart
               </button>
@@ -178,7 +262,19 @@
               <p class="product-price">R650</p>
               <button
                 class="add-to-cart-btn"
-                onclick="addToCart(4, 'Tie-Dye Hoodie - Green/Yellow', 650, {main: 'images/Artboard 1.jpg', back: 'images/Artboard 1 copy.jpg', closeup: 'images/Artboard 1 copy 2.jpg'}, 'M')"
+                onclick="
+                  addToCart(
+                    4,
+                    'Tie-Dye Hoodie - Green/Yellow',
+                    650,
+                    {
+                      main: 'images/Artboard 1.jpg',
+                      back: 'images/Artboard 1 copy.jpg',
+                      closeup: 'images/Artboard 1 copy 2.jpg',
+                    },
+                    'M',
+                  )
+                "
               >
                 Add to Cart
               </button>
@@ -208,7 +304,19 @@
               <p class="product-price">R650</p>
               <button
                 class="add-to-cart-btn"
-                onclick="addToCart(5, 'Tie-Dye Hoodie - Blue Highlighted Design', 650, {main: 'images/Artboard 1 copy 7.jpg', back: 'images/Artboard 1 copy 7-1.jpg', closeup: 'images/Artboard 1 copy 7-2.jpg'}, 'M')"
+                onclick="
+                  addToCart(
+                    5,
+                    'Tie-Dye Hoodie - Blue Highlighted Design',
+                    650,
+                    {
+                      main: 'images/Artboard 1 copy 7.jpg',
+                      back: 'images/Artboard 1 copy 7-1.jpg',
+                      closeup: 'images/Artboard 1 copy 7-2.jpg',
+                    },
+                    'M',
+                  )
+                "
               >
                 Add to Cart
               </button>
@@ -236,7 +344,19 @@
               <p class="product-price">R650</p>
               <button
                 class="add-to-cart-btn"
-                onclick="addToCart(6, 'Tie-Dye Hoodie - Design 6', 650, {main: 'images/Artboard 1 copy 6.jpg', back: 'images/Artboard 1 copy 6-1.jpg', closeup: 'images/Artboard 1 copy 6-2.jpg'}, 'M')"
+                onclick="
+                  addToCart(
+                    6,
+                    'Tie-Dye Hoodie - Design 6',
+                    650,
+                    {
+                      main: 'images/Artboard 1 copy 6.jpg',
+                      back: 'images/Artboard 1 copy 6-1.jpg',
+                      closeup: 'images/Artboard 1 copy 6-2.jpg',
+                    },
+                    'M',
+                  )
+                "
               >
                 Add to Cart
               </button>

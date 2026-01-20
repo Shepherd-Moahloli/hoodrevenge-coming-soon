@@ -1,7 +1,9 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -9,6 +11,8 @@ body {
   line-height: 1.6;
   color: #2c2c2c;
   background: #ffffff;
+  margin: 0 !important; /* Ensure no body margins */
+  padding: 0 !important; /* Ensure no body padding */
 }
 
 .container {
@@ -17,7 +21,7 @@ body {
   padding: 0 20px;
 }
 
-/* Fixed Navigation */
+/* Fixed Navigation - FULL WIDTH */
 .navbar {
   background: transparent !important;
   color: #ffffff;
@@ -26,11 +30,12 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  width: 100%;
+  width: 100vw; /* FULL VIEWPORT WIDTH */
   z-index: 999;
   box-shadow: none;
   border-bottom: none;
   transition: all 0.5s ease;
+  margin: 0; /* NO MARGINS */
 }
 
 .navbar.scrolled {
@@ -59,6 +64,7 @@ body {
 /* Remove shadow when navbar is scrolled (black logo) */
 .navbar.scrolled .logo img {
   filter: none;
+  height: 80%;
 }
 
 .nav-menu {
@@ -128,7 +134,7 @@ body {
   color: #ffffff !important;
 }
 
-/* Hero Section with Video */
+/* Hero Section with Video - FULL WIDTH NO GAPS */
 .hero-main {
   height: 700px;
   position: relative;
@@ -136,6 +142,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100vw; /* FULL VIEWPORT WIDTH */
+  margin-left: calc(-50vw + 50%); /* BREAK OUT OF CONTAINER */
+  left: 0;
+  right: 0;
 }
 
 .video-container {
@@ -227,7 +237,9 @@ body {
   border-radius: 20px;
   padding: 1.5rem;
 
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
   border: 0.5px solid #2c2c2c;
   position: relative; /* Important for zoom overlay positioning */
 }
@@ -417,44 +429,179 @@ body {
   opacity: 1;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - Enhanced for better UX */
 @media (max-width: 768px) {
+  /* 🔥 MOBILE ONLY: Remove top space completely */
+  html,
+  body {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  /* 🔥 MOBILE ONLY: Ensure navbar sits at very top */
+  .navbar {
+    top: 0 !important;
+    margin-top: 0 !important;
+    padding-top: 1rem !important; /* Keep some internal padding */
+  }
+
+  /* 🔥 MOBILE ONLY: Hero section starts immediately after navbar */
   .hero-main {
-    height: 50vh;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    height: 100vh !important; /* Full viewport height on mobile */
+    width: 100vw !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 
-  .hero-content h1 {
-    font-size: 2.5rem;
+  /* 🔥 MOBILE ONLY: Video container full coverage */
+  .video-container {
+    width: 100vw !important;
+    height: 100vh !important;
+    top: 0 !important;
+    left: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  .hero-content p {
-    font-size: 1.2rem;
+  /* 🔥 MOBILE ONLY: Video full coverage */
+  .hero-video {
+    width: 100vw !important;
+    height: 100vh !important;
+    object-fit: cover !important;
   }
 
-  .nav-menu {
-    gap: 1rem;
-    font-size: 0.9rem;
+  /* 🔥 MOBILE ONLY: Video overlay full coverage */
+  .video-overlay {
+    width: 100vw !important;
+    height: 100vh !important;
   }
 
-  .products-grid {
-    grid-template-columns: 1fr;
+  .desktop-nav {
+    display: none !important;
   }
 
-  .product-card {
-    margin: 0 1rem;
+  .mobile-menu-toggle {
+    display: block !important;
+  }
+
+  .nav-container {
+    justify-content: space-between;
+    padding: 0 20px;
   }
 
   .logo img {
-    height: 60px;
+    height: 45px; /* ALSO reduced main navbar logo for consistency */
+  }
+
+  /* Ensure proper z-index layering */
+  .mobile-menu-overlay {
+    z-index: 10000;
+  }
+
+  .mobile-menu-toggle {
+    z-index: 10001;
+  }
+
+  /* Keep navbar visible when menu is open */
+  .navbar {
+    z-index: 10002;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .product-main-image,
+  .product-img {
+    height: 250px; /* Even smaller for very small screens */
+  }
+
+  .product-card {
+    min-height: 350px;
+    margin: 0;
+    width: 70%;
+    margin: 0 auto;
+  }
+
+  .products-grid {
+    gap: 1rem;
+    margin: 30px 0;
+  }
+
+  .products h2 {
+    font-size: 1rem;
+  }
+
+  .product-info h3,
+  .product-info p,
+  .product-info button {
+    font-size: 0.875rem;
+  }
+
+  .image-btn {
+    padding: 5px 10px !important;
+    font-size: 0.65rem !important;
+    min-width: 40px !important;
+    gap: 6px;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+
+  .logo img {
+    height: 50px;
+  }
+
+  .nav-menu {
+    gap: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  /* Ensure proper spacing */
+  .container {
+    padding: 0 10px;
+  }
+
+  .nav-container {
+    padding: 0 10px;
+  }
+}
+
+/* Tablet optimization */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 
   .product-main-image,
   .product-img {
-    height: 350px; /* Slightly smaller on mobile but still taller than before */
+    height: 380px;
   }
 
-  .product-card {
-    min-height: 450px;
+  /* Keep hover effects on tablet */
+  .image-controls {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .product-card:hover .image-controls {
+    opacity: 1;
+  }
+
+  /* Reduce zoom circle size on tablet */
+  .zoom-circle {
+    width: 80px !important;
+    height: 80px !important;
   }
 }
 
@@ -481,9 +628,9 @@ body {
 /* Product Image Zoom Effect */
 .product-image-container {
   position: relative;
-  overflow: hidden;
+  overflow: visible !important; /* Allow zoom circle to show */
   border-radius: 12px;
-  width: 100%;
+  margin-bottom: 1rem;
 }
 
 .product-main-image {
@@ -503,6 +650,8 @@ body {
   gap: 8px;
   opacity: 0;
   transition: opacity 0.3s ease;
+  margin-top: 15px !important; /* More space from image */
+  z-index: 200; /* Above zoom elements */
 }
 
 .product-card:hover .image-controls {
@@ -521,6 +670,9 @@ body {
   transition: all 0.3s ease;
   min-width: 50px;
   text-align: center;
+  position: relative;
+  z-index: 300;
+  pointer-events: auto !important;
 }
 
 .image-btn:hover {
@@ -540,4 +692,991 @@ body {
 .image-btn.active:hover {
   background: #1a1a1a; /* Even darker on hover when active */
   transform: translateY(-2px);
+}
+
+/* Hide zoom on smaller screens to prevent overlap issues */
+@media (max-width: 768px) {
+  .zoom-circle {
+    display: none !important;
+  }
+
+  .product-image-container {
+    cursor: pointer !important;
+  }
+}
+
+/* ========== MOBILE MENU STYLES - FIXED LOGO & ICON SYNC ========== */
+
+/* Mobile Menu Toggle Button - SYNCS WITH NAVBAR LOGO COLOR */
+.mobile-menu-toggle {
+  display: none;
+  cursor: pointer;
+  z-index: 10001;
+  position: relative;
+}
+
+.hamburger-icon {
+  width: 30px;
+  height: 24px;
+  position: relative;
+  transform: rotate(0deg);
+  transition: 0.3s ease-in-out;
+}
+
+.hamburger-icon span {
+  display: block;
+  position: absolute;
+  height: 3px;
+  width: 100%;
+  background: #ffffff; /* DEFAULT: WHITE hamburger (matches white logo on video) */
+  border-radius: 2px;
+  opacity: 1;
+  left: 0;
+  transform: rotate(0deg);
+  transition: 0.3s ease-in-out;
+}
+
+/* 🔥 BLACK HAMBURGER when navbar is scrolled (black logo) */
+.navbar.scrolled .hamburger-icon span {
+  background: #2c2c2c !important;
+}
+
+.hamburger-icon span:nth-child(1) {
+  top: 0px;
+}
+
+.hamburger-icon span:nth-child(2) {
+  top: 10px;
+}
+
+.hamburger-icon span:nth-child(3) {
+  top: 20px;
+}
+
+/* Hamburger to X animation - MAINTAINS COLOR */
+.mobile-menu-toggle.active .hamburger-icon span:nth-child(1) {
+  top: 10px;
+  transform: rotate(135deg);
+}
+
+.mobile-menu-toggle.active .hamburger-icon span:nth-child(2) {
+  opacity: 0;
+  left: -60px;
+}
+
+.mobile-menu-toggle.active .hamburger-icon span:nth-child(3) {
+  top: 10px;
+  transform: rotate(-135deg);
+}
+
+/* Full-Screen Mobile Menu Overlay - WHITE BACKGROUND */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transform: translateX(-100%);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  padding: 0;
+}
+
+.mobile-menu-overlay.active {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.mobile-menu-content {
+  text-align: center;
+  color: #2c2c2c;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* 🔥 UPDATED: Mobile Menu Header with 80px logo height as shown in inspector */
+.mobile-menu-header {
+  position: absolute;
+  top: 30px;
+  left: 25px;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-logo {
+  height: 80px !important; /* INCREASED to 80px as shown in inspector */
+  width: auto !important;
+  /* 🎯 ENSURE BLACK LOGO SHOWS - Remove any filters */
+  filter: none !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* Remove any conflicting logo styles in mobile menu */
+.mobile-menu-overlay .mobile-logo {
+  /* Keep original logo colors - should be black on white background */
+  filter: none !important;
+  height: 80px !important; /* CONSISTENT 80px size */
+  width: auto;
+  max-width: none;
+}
+
+/* Mobile Menu Links - Centered */
+.mobile-menu-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 2rem 0;
+}
+
+.mobile-menu-links a {
+  color: #2c2c2c;
+  text-decoration: none;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 1.5rem 2rem;
+  border-radius: 0;
+  transition: all 0.3s ease;
+  border: none;
+  position: relative;
+}
+
+.mobile-menu-links a:hover,
+.mobile-menu-links a:focus {
+  color: #666666;
+  transform: scale(1.05);
+}
+
+/* Special styling for cart link */
+.mobile-cart-link {
+  font-size: 2rem !important;
+  color: #2c2c2c !important;
+  border: 3px solid #2c2c2c !important;
+  padding: 1rem 2rem !important;
+  border-radius: 50px !important;
+  margin-top: 1rem;
+}
+
+.mobile-cart-link:hover {
+  background: #2c2c2c !important;
+  color: #ffffff !important;
+}
+
+/* Remove footer completely */
+.mobile-menu-footer {
+  display: none;
+}
+
+/* Responsive Display Rules */
+@media (max-width: 768px) {
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .mobile-menu-toggle {
+    display: block !important;
+  }
+
+  .nav-container {
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+
+  .logo img {
+    height: 45px; /* ALSO reduced main navbar logo for consistency */
+  }
+
+  /* Ensure proper z-index layering */
+  .mobile-menu-overlay {
+    z-index: 10000;
+  }
+
+  .mobile-menu-toggle {
+    z-index: 10001;
+  }
+
+  /* Keep navbar visible when menu is open */
+  .navbar {
+    z-index: 10002;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-toggle,
+  .mobile-menu-overlay {
+    display: none !important;
+  }
+}
+
+/* Prevent scrolling when mobile menu is open */
+body.mobile-menu-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+/* ADD this section after the existing hamburger styles (around line 780) */
+
+/* 🔥 BLACK hamburger icon when mobile menu is ACTIVE */
+.mobile-menu-toggle.active .hamburger-icon span {
+  background: #2c2c2c !important;
+}
+
+/* 🔥 BLACK logo when mobile menu is ACTIVE */
+.mobile-menu-overlay.active ~ .nav-container .logo img {
+  filter: brightness(0) !important;
+}
+
+/* Alternative approach - force black logo when menu is open */
+body.mobile-menu-open .navbar .logo img {
+  filter: brightness(0) !important;
+}
+
+/* Ensure hamburger stays black when menu is open */
+body.mobile-menu-open .hamburger-icon span {
+  background: #2c2c2c !important;
+}
+
+/* ADD this completely separate mobile section at the end of your CSS: */
+
+/* ========== MOBILE ONLY: REMOVE TOP BLACK SPACE - ENHANCED VIDEO FIX ========== */
+@media (max-width: 768px) {
+  /* Force mobile body to start at top */
+  body {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  /* Mobile navbar positioning */
+  .navbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    z-index: 999 !important;
+  }
+
+  /* 🔥 FIXED: Mobile hero section - eliminate gaps and ensure full coverage */
+  .hero-main {
+    position: relative !important;
+    top: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    /* Break out of any container constraints */
+    margin-left: calc(-50vw + 50%) !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  /* 🔥 FIXED: Mobile video positioning - full coverage */
+  .video-container {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* 🔥 CRITICAL FIX: Mobile video sizing for portrait screens */
+  .hero-video {
+    width: 100vw !important;
+    height: 100vh !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    /* 🎯 ENSURE VIDEO COVERS FULL HEIGHT - scale up if needed */
+    min-width: 100vw !important;
+    min-height: 100vh !important;
+    /* Force video to fill completely */
+    transform: scale(
+      1.1
+    ) !important; /* Slightly scale up to eliminate any gaps */
+  }
+
+  /* 🔥 FIXED: Video overlay - full coverage */
+  .video-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    z-index: 2 !important;
+  }
+
+  /* 🔥 ENSURE: Hero content stays centered */
+  .hero-content {
+    position: relative !important;
+    z-index: 10 !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    color: #ffffff !important;
+    padding: 0 20px !important;
+  }
+
+  /* Mobile text adjustments */
+  .hero-content h1 {
+    font-size: 2.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .hero-content p {
+    font-size: 1.2rem !important;
+    margin-bottom: 2rem !important;
+  }
+}
+
+/* ========== EXTRA MOBILE FIX for very small screens ========== */
+@media (max-width: 480px) {
+  .hero-video {
+    /* Even more aggressive scaling for small screens */
+    transform: scale(1.2) !important;
+    object-position: center center !important;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem !important;
+  }
+
+  .hero-content p {
+    font-size: 1rem !important;
+  }
+}
+
+/* FIND your existing mobile media query around line 400 and ADD these cart styles: */
+
+@media (max-width: 768px) {
+  /* Your existing mobile styles... */
+
+  /* 🔥 MOBILE CART - 100% WIDTH STYLING */
+  .cart-container,
+  .cart-content,
+  .cart-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 15px !important; /* Small padding for screen edge spacing */
+  }
+
+  /* Cart items full width */
+  .cart-items,
+  .cart-item {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 15px 0 !important;
+  }
+
+  /* Cart item layout - full width */
+  .cart-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-bottom: 1px solid #eee;
+    width: 100% !important;
+  }
+
+  /* Cart item image - smaller on mobile */
+  .cart-item img {
+    width: 60px !important;
+    height: 60px !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Cart item details - take remaining space */
+  .cart-item-details {
+    flex: 1 !important;
+    padding: 0 10px !important;
+    text-align: left !important;
+  }
+
+  .cart-item-details h4 {
+    font-size: 0.9rem !important;
+    margin: 0 0 5px 0 !important;
+    color: #2c2c2c !important;
+  }
+
+  .cart-item-details p {
+    font-size: 0.8rem !important;
+    color: #666 !important;
+    margin: 0 !important;
+  }
+
+  /* Cart item controls - compact on mobile */
+  .cart-item-controls {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
+  }
+
+  /* Quantity controls - smaller on mobile */
+  .quantity-controls {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .quantity-btn {
+    width: 25px !important;
+    height: 25px !important;
+    border: 1px solid #2c2c2c !important;
+    background: white !important;
+    border-radius: 50% !important;
+    font-size: 0.8rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+  }
+
+  .quantity-display {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    min-width: 20px !important;
+    text-align: center !important;
+  }
+
+  /* Cart item price */
+  .cart-item-price {
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    color: #2c2c2c !important;
+  }
+
+  /* Remove button - compact */
+  .remove-btn {
+    background: none !important;
+    border: none !important;
+    color: #999 !important;
+    font-size: 0.7rem !important;
+    cursor: pointer !important;
+    padding: 2px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .remove-btn:hover {
+    color: #2c2c2c !important;
+  }
+
+  /* Cart summary - full width */
+  .cart-summary {
+    width: 100% !important;
+    padding: 20px 15px !important;
+    background: #f9f9f9 !important;
+    margin: 20px 0 !important;
+    border-radius: 10px !important;
+  }
+
+  .cart-total {
+    font-size: 1.2rem !important;
+    font-weight: 700 !important;
+    color: #2c2c2c !important;
+    text-align: center !important;
+    margin-bottom: 15px !important;
+  }
+
+  /* Checkout button - full width */
+  .checkout-btn,
+  .cart-checkout-btn {
+    width: 100% !important;
+    padding: 15px !important;
+    background: #2c2c2c !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 25px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .checkout-btn:hover,
+  .cart-checkout-btn:hover {
+    background: #1a1a1a !important;
+    transform: translateY(-1px) !important;
+  }
+
+  /* Empty cart message - full width */
+  .empty-cart {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 40px 15px !important;
+  }
+
+  .empty-cart h3 {
+    font-size: 1.2rem !important;
+    color: #2c2c2c !important;
+    margin-bottom: 10px !important;
+  }
+
+  .empty-cart p {
+    font-size: 0.9rem !important;
+    color: #666 !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* Continue shopping button */
+  .continue-shopping-btn {
+    background: white !important;
+    color: #2c2c2c !important;
+    border: 1px solid #2c2c2c !important;
+    padding: 12px 24px !important;
+    border-radius: 25px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .continue-shopping-btn:hover {
+    background: #2c2c2c !important;
+    color: white !important;
+  }
+}
+
+/* Extra small screens - even more compact */
+@media (max-width: 480px) {
+  .cart-container {
+    padding: 0 10px !important;
+  }
+
+  .cart-item img {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  .cart-item-details h4 {
+    font-size: 0.8rem !important;
+  }
+
+  .cart-item-details p {
+    font-size: 0.7rem !important;
+  }
+
+  .cart-item-price {
+    font-size: 0.8rem !important;
+  }
+
+  .quantity-btn {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 0.7rem !important;
+  }
+
+  .cart-summary {
+    padding: 15px 10px !important;
+  }
+
+  .cart-total {
+    font-size: 1.1rem !important;
+  }
+
+  .checkout-btn,
+  .cart-checkout-btn {
+    padding: 12px !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+/* ========== MOBILE CART - CENTERED & FULL WIDTH FIX ========== */
+@media (max-width: 768px) {
+  /* 🔥 FIXED: Mobile cart container - properly centered */
+  .cart-container,
+  .cart-content,
+  .cart-main {
+    width: 90% !important; /* NARROWER: 90% instead of 100% */
+    max-width: 90vw !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    margin-top: 120px !important; /* FIXED: Push down from navbar */
+  }
+
+  /* 🔥 FIXED: Cart page wrapper - narrower and proper top spacing */
+  .cart-page,
+  .cart-wrapper {
+    width: 90% !important; /* NARROWER: Match container width */
+    max-width: 90vw !important;
+    margin: 0 auto !important;
+    padding: 120px 10px 20px 10px !important; /* FIXED: Top padding for navbar */
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  /* 🔥 FIXED: Cart items container - narrower centered layout */
+  .cart-items {
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+  }
+
+  /* 🔥 FIXED: Individual cart item - narrower width */
+  .cart-item {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 15px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-bottom: 1px solid #eee !important;
+    background: #ffffff !important;
+    border-radius: 15px !important;
+    margin-bottom: 15px !important;
+    box-sizing: border-box !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important; /* Add subtle shadow */
+  }
+
+  /* 🔥 FIXED: Cart item image - smaller and consistent */
+  .cart-item img,
+  .cart-item-image img {
+    width: 60px !important;
+    height: 60px !important;
+    object-fit: cover !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important;
+    margin-right: 12px !important;
+  }
+
+  /* 🔥 FIXED: Cart item details - proper flex and sizing */
+  .cart-item-details,
+  .cart-item-info {
+    flex: 1 !important;
+    padding: 0 8px !important;
+    text-align: left !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .cart-item-details h4,
+  .cart-item-info h4 {
+    font-size: 0.9rem !important;
+    margin: 0 0 3px 0 !important;
+    color: #2c2c2c !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .cart-item-details p,
+  .cart-item-info p {
+    font-size: 0.75rem !important;
+    color: #666 !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* 🔥 FIXED: Cart item controls - compact and aligned */
+  .cart-item-controls,
+  .cart-item-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+    min-width: 80px !important;
+  }
+
+  /* 🔥 FIXED: Quantity controls - compact design */
+  .quantity-controls {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: #f5f5f5 !important;
+    padding: 4px 8px !important;
+    border-radius: 20px !important;
+  }
+
+  .quantity-btn {
+    width: 24px !important;
+    height: 24px !important;
+    border: 1px solid #2c2c2c !important;
+    background: white !important;
+    border-radius: 50% !important;
+    font-size: 0.7rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-weight: 600 !important;
+  }
+
+  .quantity-btn:hover {
+    background: #2c2c2c !important;
+    color: white !important;
+  }
+
+  .quantity-display,
+  .quantity-value {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    min-width: 20px !important;
+    text-align: center !important;
+    color: #2c2c2c !important;
+  }
+
+  /* 🔥 FIXED: Cart item price - compact display */
+  .cart-item-price,
+  .item-price {
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    color: #2c2c2c !important;
+    margin-bottom: 3px !important;
+    text-align: left !important;
+  }
+
+  /* 🔥 FIXED: Remove button - smaller styling */
+  .remove-btn,
+  .remove-item {
+    background: none !important;
+    border: none !important;
+    color: #999 !important;
+    font-size: 0.65rem !important;
+    cursor: pointer !important;
+    padding: 2px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    transition: color 0.3s ease !important;
+  }
+
+  .remove-btn:hover,
+  .remove-item:hover {
+    color: #2c2c2c !important;
+  }
+
+  /* 🔥 FIXED: Cart summary - narrower width */
+  .cart-summary,
+  .cart-total-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 20px 15px !important;
+    background: #f9f9f9 !important;
+    margin: 25px 0 15px 0 !important;
+    border-radius: 15px !important;
+    text-align: center !important;
+  }
+
+  /* 🔥 FIXED: Order summary to match the top design - simpler layout */
+  .order-summary {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 25px 15px !important;
+    background: #f9f9f9 !important;
+    margin: 25px 0 15px 0 !important;
+    border-radius: 15px !important;
+    text-align: center !important;
+  }
+
+  /* 🔥 HIDE detailed breakdown - show only total like top image */
+  .subtotal-row,
+  .vat-row,
+  .tax-breakdown,
+  .order-details {
+    display: none !important; /* Hide VAT and subtotal breakdown */
+  }
+
+  /* 🔥 FIXED: Show only the main total like top design */
+  .cart-total,
+  .total-price,
+  .final-total {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: #2c2c2c !important;
+    text-align: center !important;
+    margin: 0 0 20px 0 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 0 !important;
+  }
+
+  /* 🔥 FIXED: Simple total display - no "R747.50" breakdown */
+  .price-display,
+  .total-amount {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: #2c2c2c !important;
+    margin: 0 !important;
+  }
+
+  /* 🔥 HIDE: Order summary heading if it exists */
+  .order-summary h2,
+  .cart-summary h2,
+  .summary-title {
+    display: none !important;
+  }
+
+  /* 🔥 FIXED: Checkout button to match top design */
+  .checkout-btn,
+  .cart-checkout-btn,
+  .checkout-button,
+  .proceed-checkout {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 18px !important;
+    background: #2c2c2c !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 30px !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    margin: 0 0 15px 0 !important;
+  }
+
+  .checkout-btn:hover,
+  .cart-checkout-btn:hover,
+  .checkout-button:hover,
+  .proceed-checkout:hover {
+    background: #1a1a1a !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(44, 44, 44, 0.2) !important;
+  }
+
+  /* 🔥 CENTER: Continue shopping button */
+  .continue-shopping-btn,
+  .continue-shopping {
+    background: transparent !important;
+    color: #2c2c2c !important;
+    border: none !important;
+    padding: 12px 0 !important;
+    border-radius: 0 !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    text-decoration: underline !important;
+    margin: 10px auto 0 auto !important;
+    display: block !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 280px !important;
+  }
+
+  .continue-shopping-btn:hover,
+  .continue-shopping:hover {
+    color: #666 !important;
+    background: transparent !important;
+    transform: none !important;
+  }
+
+  /* 🔥 ENSURE: Overall cart container is centered */
+  .cart-container,
+  .cart-content,
+  .cart-main {
+    width: 90% !important;
+    max-width: 90vw !important;
+    margin: 120px auto 20px auto !important; /* CENTER the entire cart */
+    padding: 20px 15px !important;
+    box-sizing: border-box !important;
+  }
+
+  .cart-page,
+  .cart-wrapper {
+    width: 90% !important;
+    max-width: 90vw !important;
+    margin: 0 auto !important; /* CENTER the cart wrapper */
+    padding: 120px 10px 20px 10px !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+}
+
+/* 🔥 EXTRA SMALL SCREENS - Keep centered design */
+@media (max-width: 480px) {
+  .order-summary,
+  .cart-summary,
+  .cart-total-section {
+    width: 85% !important;
+    margin: 20px auto !important;
+    padding: 20px 15px !important;
+  }
+
+  .summary-row,
+  .subtotal-row,
+  .vat-row,
+  .total-row {
+    max-width: 250px !important;
+  }
+
+  .checkout-btn,
+  .cart-checkout-btn,
+  .checkout-button,
+  .proceed-checkout {
+    max-width: 250px !important;
+    padding: 15px !important;
+    font-size: 1rem !important;
+  }
+
+  .continue-shopping-btn,
+  .continue-shopping {
+    max-width: 250px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .cart-container,
+  .cart-content,
+  .cart-main {
+    width: 85% !important;
+    margin: 100px auto 15px auto !important;
+  }
+
+  .cart-page,
+  .cart-wrapper {
+    width: 85% !important;
+    padding: 100px 5px 15px 5px !important;
+  }
+
+  .footer p {
+    font-size: 10px !important;
+  }
 }
