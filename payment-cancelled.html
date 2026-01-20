@@ -6,31 +6,63 @@
     <title>Payment Cancelled - HoodRevenge</title>
     <link rel="stylesheet" href="css/main.css" />
     <style>
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .navbar {
+        flex-shrink: 0; /* Keep navbar at top */
+      }
+
       .cancelled-section {
-        padding: 60px 0;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
         text-align: center;
         background: #fff;
+        min-height: calc(100vh - 120px); /* Account for navbar height */
       }
+
+      .container {
+        max-width: 600px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
       .cancelled-icon {
         font-size: 80px;
         margin-bottom: 30px;
+        color: #e74c3c;
       }
+
       .cancelled-section h1 {
         color: #e74c3c;
         font-size: 2.5rem;
         margin-bottom: 20px;
+        font-weight: 600;
       }
+
       .cancelled-section p {
         font-size: 1.2rem;
         color: #666;
-        margin-bottom: 40px;
+        margin-bottom: 20px;
+        line-height: 1.6;
       }
+
       .actions {
         display: flex;
         gap: 20px;
         justify-content: center;
         flex-wrap: wrap;
+        margin-top: 40px;
       }
+
       .cta-btn {
         display: inline-block;
         padding: 15px 30px;
@@ -40,19 +72,42 @@
         border-radius: 8px;
         font-weight: 600;
         transition: all 0.3s ease;
+        min-width: 160px;
+        text-align: center;
       }
+
       .cta-btn:hover {
-        background: #000;
+        background: #1a1a1a;
         transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(44, 44, 44, 0.3);
       }
+
       .cta-btn.secondary {
         background: transparent;
         border: 2px solid #2c2c2c;
         color: #2c2c2c;
       }
+
       .cta-btn.secondary:hover {
         background: #2c2c2c;
         color: white;
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 768px) {
+        .cancelled-section h1 {
+          font-size: 2rem;
+        }
+
+        .actions {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .cta-btn {
+          width: 100%;
+          max-width: 250px;
+        }
       }
     </style>
   </head>
