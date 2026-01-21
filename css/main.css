@@ -1194,7 +1194,6 @@ body.mobile-menu-open .hamburger-icon span {
 
   /* Cart summary - full width */
   .cart-summary {
-    width: 100% !important;
     padding: 20px 15px !important;
     background: #f9f9f9 !important;
     margin: 20px 0 !important;
@@ -1492,7 +1491,6 @@ body.mobile-menu-open .hamburger-icon span {
   /* 🔥 FIXED: Cart summary - narrower width */
   .cart-summary,
   .cart-total-section {
-    width: 100% !important;
     max-width: 100% !important;
     padding: 20px 15px !important;
     background: #f9f9f9 !important;
@@ -1503,13 +1501,16 @@ body.mobile-menu-open .hamburger-icon span {
 
   /* 🔥 FIXED: Order summary to match the top design - simpler layout */
   .order-summary {
-    width: 100% !important;
     max-width: 100% !important;
     padding: 25px 15px !important;
     background: #f9f9f9 !important;
     margin: 25px 0 15px 0 !important;
     border-radius: 15px !important;
     text-align: center !important;
+  }
+
+  .order-summary p {
+    text-align: end;
   }
 
   /* 🔥 HIDE detailed breakdown - show only total like top image */
@@ -1594,7 +1595,6 @@ body.mobile-menu-open .hamburger-icon span {
     letter-spacing: 1px !important;
     cursor: pointer !important;
     transition: all 0.3s ease !important;
-    text-decoration: underline !important;
     margin: 10px auto 0 auto !important;
     display: block !important;
     text-align: center !important;
@@ -1636,16 +1636,28 @@ body.mobile-menu-open .hamburger-icon span {
   .order-summary,
   .cart-summary,
   .cart-total-section {
-    width: 85% !important;
     margin: 20px auto !important;
     padding: 20px 15px !important;
+  }
+
+  .cart-summary {
+    width: 90% !important;
+  }
+
+  .item-details h3,
+  .item-details {
+    font-size: 12px !important;
+  }
+
+  .checkout-steps {
+    font-size: 11px !important;
   }
 
   .summary-row,
   .subtotal-row,
   .vat-row,
   .total-row {
-    max-width: 250px !important;
+    max-width: 100% !important;
   }
 
   .checkout-btn,
@@ -1666,7 +1678,6 @@ body.mobile-menu-open .hamburger-icon span {
   .cart-container,
   .cart-content,
   .cart-main {
-    width: 85% !important;
     margin: 100px auto 15px auto !important;
   }
 
@@ -1678,5 +1689,188 @@ body.mobile-menu-open .hamburger-icon span {
 
   .footer p {
     font-size: 10px !important;
+  }
+}
+
+/* 🔥 MOBILE: Always show image control buttons - don't hide them */
+@media (max-width: 768px) {
+  /* 🔥 FIXED: Image controls - always visible on mobile */
+  .image-controls {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    margin-top: 15px !important;
+    padding: 10px 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    transition: none !important;
+    position: static !important; /* Remove any absolute positioning */
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    z-index: auto !important;
+  }
+
+  /* 🔥 ENSURE: Image buttons are always visible */
+  .image-btn {
+    display: inline-block !important;
+    padding: 8px 16px !important;
+    background: white !important;
+    color: #2c2c2c !important;
+    border: 1px solid #2c2c2c !important;
+    border-radius: 25px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    position: static !important;
+  }
+
+  /* 🔥 ACTIVE: Active button styling */
+  .image-btn.active {
+    background: #2c2c2c !important;
+    color: white !important;
+    transform: none !important;
+  }
+
+  /* 🔥 HOVER: Button hover effects */
+  .image-btn:hover {
+    background: #2c2c2c !important;
+    color: white !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 10px rgba(44, 44, 44, 0.2) !important;
+  }
+
+  /* 🔥 PREVENT: Any hover-based hiding */
+  .product-image-container:hover .image-controls,
+  .product-card:hover .image-controls {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+
+  /* 🔥 OVERRIDE: Any existing hover/scroll hiding behavior */
+  .product-image-container .image-controls {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    position: static !important;
+  }
+
+  /* 🔥 ENSURE: Product image container doesn't hide controls */
+  .product-image-container {
+    position: relative !important;
+    overflow: visible !important;
+  }
+
+  /* 🔥 MOBILE: Product card layout with always-visible controls */
+  .product-card {
+    margin-bottom: 30px !important;
+    background: white !important;
+    border-radius: 15px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* 🔥 ENSURE: Product image doesn't overflow and hide controls */
+  .product-main-image {
+    width: 100% !important;
+    height: auto !important;
+    border-radius: 10px !important;
+    margin-bottom: 15px !important;
+    display: block !important;
+  }
+
+  /* 🔥 SPACING: Proper spacing for mobile layout */
+  .product-info {
+    padding-top: 15px !important;
+    text-align: center !important;
+  }
+
+  .product-name {
+    font-size: 1.1rem !important;
+
+    color: #2c2c2c !important;
+    margin: 0 0 10px 0 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+  }
+
+  .product-price {
+    font-size: 1.3rem !important;
+    font-weight: 700 !important;
+    color: #2c2c2c !important;
+    margin: 0 0 20px 0 !important;
+  }
+
+  /* 🔥 ADD TO CART: Button styling for mobile */
+  .add-to-cart-btn {
+    width: 70% !important;
+    padding: 15px !important;
+    background: #2c2c2c !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 30px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .add-to-cart-btn:hover {
+    background: #1a1a1a !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(44, 44, 44, 0.3) !important;
+  }
+}
+
+/* 🔥 EXTRA SMALL SCREENS: Compact button layout */
+@media (max-width: 480px) {
+  .image-controls {
+    gap: 8px !important;
+    margin-top: 12px !important;
+    padding: 8px 0 !important;
+  }
+
+  .image-btn {
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important;
+    border-radius: 20px !important;
+  }
+
+  .product-card {
+    margin-bottom: 25px !important;
+
+    padding-bottom: 50px;
+  }
+
+  .product-name {
+    font-size: 1rem !important;
+  }
+
+  .product-price {
+    font-size: 1.2rem !important;
+  }
+
+  .add-to-cart-btn {
+    padding: 12px !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+/* 🔥 OVERRIDE: Any desktop-only hiding behavior */
+@media (min-width: 769px) {
+  /* Keep existing desktop hover behavior if needed */
+  .image-controls {
+    /* Your existing desktop styles */
   }
 }
