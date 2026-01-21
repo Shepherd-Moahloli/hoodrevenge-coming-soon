@@ -127,6 +127,11 @@ console.log("✅ Functions defined:", {
 document.addEventListener("DOMContentLoaded", function () {
   console.log("🛒 Cart page loaded");
 
+  // 🔥 MAKE THESE FUNCTIONS GLOBAL AND ACCESSIBLE
+  window.displayCartItems = displayCartItems;
+  window.updateCartSummary = updateCartSummary;
+  window.updateCartTotal = updateCartSummary; // Alias for updateCartSummary
+
   displayCartItems();
   updateCartSummary();
 
@@ -135,10 +140,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const cartItemsContainer = document.getElementById("cart-items");
     const emptyCartMessage = document.getElementById("empty-cart");
 
-    console.log("Cart data loaded:", cart);
+    console.log("📦 Cart data loaded:", cart);
 
     if (!cartItemsContainer) {
-      console.log("Cart container not found");
+      console.log("❌ Cart container not found");
       return;
     }
 
@@ -151,70 +156,50 @@ document.addEventListener("DOMContentLoaded", function () {
     if (emptyCartMessage) emptyCartMessage.style.display = "none";
     if (cartItemsContainer) cartItemsContainer.style.display = "block";
 
+    // 🔥 FIXED: Updated cart item HTML with working buttons
     cartItemsContainer.innerHTML = cart
-      .map((item) => {
-        let imageUrl = "images/Artboard 1.jpg";
-
-        if (
-          item.images &&
-          item.images.main &&
-          item.images.main !== "undefined"
-        ) {
-          imageUrl = item.images.main;
-        }
-
-        const price = item.price || 650;
-        const size = item.size || "M";
-
-        return `
-          <div class="cart-item" data-id="${item.id}" data-size="${size}">
-            <div class="item-image">
-              <img src="${imageUrl}" alt="${item.name}" class="item-img" />
-            </div>
-            <div class="item-details">
-              <h3 class="item-name">${item.name}</h3>
-              <p class="item-price">R${price}</p>
-              <div class="size-selection">
-                <label>Size:</label>
-                <select class="size-dropdown" onchange="updateSize(${
-                  item.id
-                }, '${size}', this.value)">
-                  <option value="XS" ${
-                    size === "XS" ? "selected" : ""
-                  }>XS</option>
-                  <option value="S" ${size === "S" ? "selected" : ""}>S</option>
-                  <option value="M" ${size === "M" ? "selected" : ""}>M</option>
-                  <option value="L" ${size === "L" ? "selected" : ""}>L</option>
-                  <option value="XL" ${
-                    size === "XL" ? "selected" : ""
-                  }>XL</option>
-                  <option value="XXL" ${
-                    size === "XXL" ? "selected" : ""
-                  }>XXL</option>
-                </select>
-              </div>
-            </div>
-            <div class="item-actions">
-              <div class="quantity-controls">
-                <button class="quantity-btn" onclick="updateQuantity(${
-                  item.id
-                }, '${size}', ${item.quantity - 1})">−</button>
-                <span class="quantity-display">${item.quantity}</span>
-                <button class="quantity-btn" onclick="updateQuantity(${
-                  item.id
-                }, '${size}', ${item.quantity + 1})">+</button>
-              </div>
-              <div class="item-total">R${(price * item.quantity).toFixed(
-                2,
-              )}</div>
-              <button class="remove-item" onclick="removeFromCart(${
-                item.id
-              }, '${size}')">REMOVE</button>
-            </div>
+      .map(
+        (item) => `
+      <div class="cart-item" data-id="${item.id}" data-size="${item.size}">
+        <div class="cart-item-image">
+          <img src="${item.images?.main || "images/default-product.jpg"}" 
+               alt="${item.name}" 
+               onerror="this.src='images/Artboard 1 copy 8.jpg'">
+        </div>
+        <div class="cart-item-details">
+          <h3 class="cart-item-name">${item.name}</h3>
+          <p class="cart-item-description">Premium South African Streetwear</p>
+          <p class="cart-item-price">R${item.price.toFixed(2)}</p>
+          <p class="cart-item-size">SIZE: 
+            <select onchange="updateItemSize(${item.id}, '${item.size}', this.value)">
+              <option value="M" ${item.size === "M" ? "selected" : ""}>M</option>
+            </select>
+          </p>
+          
+          <!-- 🔥 WORKING QUANTITY CONTROLS -->
+          <div class="quantity-controls">
+            <button class="quantity-btn minus" onclick="window.decreaseQuantity(${item.id}, '${item.size}'); console.log('Minus clicked for ${item.id}');">
+              <span>-</span>
+            </button>
+            <span class="quantity-display">${item.quantity || 1}</span>
+            <button class="quantity-btn plus" onclick="window.increaseQuantity(${item.id}, '${item.size}'); console.log('Plus clicked for ${item.id}');">
+              <span>+</span>
+            </button>
           </div>
-        `;
-      })
+          
+          <button class="remove-btn" onclick="window.removeFromCart(${item.id}, '${item.size}'); console.log('Remove clicked for ${item.id}');">
+            REMOVE
+          </button>
+        </div>
+        <div class="cart-item-total">
+          <span class="item-total">R${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</span>
+        </div>
+      </div>
+    `,
+      )
       .join("");
+
+    console.log("✅ Cart items rendered");
   }
 
   function updateCartSummary() {
@@ -237,13 +222,17 @@ document.addEventListener("DOMContentLoaded", function () {
       subtotalElement.textContent = `R${subtotal.toFixed(2)}`;
     if (vatElement) vatElement.textContent = `R${vat.toFixed(2)}`;
     if (totalElement) totalElement.textContent = `R${total.toFixed(2)}`;
+
+    console.log("💰 Cart summary updated - Total:", total.toFixed(2));
   }
 
   function updateCartCount() {
     const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
     const count = cart.reduce((total, item) => total + (item.quantity || 1), 0);
 
-    const cartCountElements = document.querySelectorAll("#cart-count");
+    const cartCountElements = document.querySelectorAll(
+      "#cart-count, .cart-count",
+    );
     cartCountElements.forEach((element) => {
       element.textContent = count;
     });
@@ -251,6 +240,8 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(`🔢 Cart count updated to: ${count}`);
   }
 
+  // Make updateCartCount global too
+  window.updateCartCount = updateCartCount;
   updateCartCount();
 });
 
@@ -427,45 +418,54 @@ function proceedToCheckout() {
   window.location.href = "checkout.html";
 }
 
-// 🔥 FIXED: showCartNotification function - with correct image fallback
-
+// 🔥 FIXED: showCartNotification function - with better image detection
 function showCartNotification(product) {
-  console.log("🔍 Showing notification for product:", product);
-  console.log("🖼️ Product images object:", product.images);
+  console.log("🔍 Showing notification for:", product);
 
-  // Remove any existing notifications
+  // Remove existing notification
   const existingNotification = document.querySelector(".cart-notification");
   if (existingNotification) {
     existingNotification.remove();
   }
 
-  // 🔥 FIXED: Get the correct image path - try multiple sources
+  // 🔥 SMART IMAGE DETECTION: Try multiple methods to get the right image
   let thumbnailSrc = "";
 
-  // First try: product images
-  if (product.images && product.images.main) {
+  // Method 1: Get from the visible product image on the page
+  const visibleImage = document.querySelector(".product-main-image");
+  if (
+    visibleImage &&
+    visibleImage.src &&
+    !visibleImage.src.includes("undefined")
+  ) {
+    thumbnailSrc = visibleImage.src;
+    console.log("✅ Using visible page image:", thumbnailSrc);
+  }
+  // Method 2: Use product catalog
+  else if (product.images && product.images.main) {
     thumbnailSrc = product.images.main;
-    console.log("✅ Using product.images.main:", thumbnailSrc);
+    console.log("✅ Using catalog image:", thumbnailSrc);
   }
-  // Second try: find the actual image from the DOM
+  // Method 3: Use catalog by product ID
+  else if (PRODUCT_CATALOG[product.id]) {
+    thumbnailSrc = PRODUCT_CATALOG[product.id].images.main;
+    console.log("✅ Using catalog by ID:", thumbnailSrc);
+  }
+  // Method 4: Fallback based on product ID
   else {
-    const productImages = document.querySelectorAll('img[src*="Artboard"]');
-    if (productImages.length > 0) {
-      // Use the first available product image
-      thumbnailSrc = productImages[0].src;
-      console.log("✅ Using DOM image:", thumbnailSrc);
-    }
-  }
-
-  // Final fallback - use the image that's actually visible
-  if (!thumbnailSrc) {
-    thumbnailSrc = "images/default-product.jpg"; // This matches your HTML
-    console.log("⚠️ Using default fallback:", thumbnailSrc);
+    const fallbackImages = {
+      1: "images/Artboard 1 copy 8.jpg",
+      2: "images/Artboard 1 copy 3.jpg",
+      3: "images/Artboard 1 copy 6.jpg",
+      4: "images/Artboard 1.jpg",
+      5: "images/Artboard 1 copy 7.jpg",
+    };
+    thumbnailSrc = fallbackImages[product.id] || "images/Artboard 1 copy 8.jpg";
+    console.log("⚠️ Using fallback image:", thumbnailSrc);
   }
 
   console.log("🎯 Final thumbnail source:", thumbnailSrc);
 
-  // Create notification with thumbnail
   const notification = document.createElement("div");
   notification.className = "cart-notification";
 
@@ -475,8 +475,8 @@ function showCartNotification(product) {
         <img src="${thumbnailSrc}" 
              alt="${product.name}" 
              class="notification-image"
-             onload="console.log('✅ Image loaded successfully:', this.src)"
-             onerror="console.log('❌ Image failed to load:', this.src); this.src='images/default-product.jpg';">
+             onload="console.log('✅ Thumbnail loaded successfully:', this.src)"
+             onerror="console.log('❌ Failed to load:', this.src); this.src='images/Artboard 1 copy 8.jpg';">
       </div>
       <div class="notification-text">
         <h4>${product.name} (Size ${product.size})</h4>
@@ -486,15 +486,12 @@ function showCartNotification(product) {
     </div>
   `;
 
-  // Add to page
   document.body.appendChild(notification);
 
-  // Show notification with animation
-  setTimeout(() => {
-    notification.classList.add("show");
-  }, 100);
+  // Show with animation
+  setTimeout(() => notification.classList.add("show"), 100);
 
-  // Hide and remove after 3 seconds
+  // Hide after 3 seconds
   setTimeout(() => {
     notification.classList.remove("show");
     setTimeout(() => {
@@ -653,3 +650,104 @@ function showCartNotification(product) {
     }, 300);
   }, 3000);
 }
+
+// 🔥 IMPROVED QUANTITY FUNCTIONS - Replace the existing ones
+
+// Increase quantity function
+window.increaseQuantity = function (productId, size) {
+  console.log("🔼 INCREASE QUANTITY CLICKED:", productId, size);
+
+  const cartData = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  const item = cartData.find(
+    (item) => item.id == productId && item.size === size,
+  );
+
+  if (item) {
+    item.quantity += 1;
+    console.log("✅ Increased quantity to:", item.quantity);
+
+    // Save to localStorage
+    localStorage.setItem("hoodrevenge-cart", JSON.stringify(cartData));
+
+    // Update the display
+    if (window.displayCartItems) {
+      window.displayCartItems();
+    }
+    if (window.updateCartSummary) {
+      window.updateCartSummary();
+    }
+    if (window.updateCartCount) {
+      window.updateCartCount();
+    }
+
+    console.log("🔄 Page updated after increase");
+  } else {
+    console.log("❌ Item not found for increase");
+  }
+};
+
+// Decrease quantity function
+window.decreaseQuantity = function (productId, size) {
+  console.log("🔽 DECREASE QUANTITY CLICKED:", productId, size);
+
+  const cartData = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  const itemIndex = cartData.findIndex(
+    (item) => item.id == productId && item.size === size,
+  );
+
+  if (itemIndex !== -1) {
+    const item = cartData[itemIndex];
+
+    if (item.quantity > 1) {
+      item.quantity -= 1;
+      console.log("✅ Decreased quantity to:", item.quantity);
+    } else {
+      // Remove item if quantity becomes 0
+      cartData.splice(itemIndex, 1);
+      console.log("🗑️ Removed item from cart (quantity was 1)");
+    }
+
+    // Save to localStorage
+    localStorage.setItem("hoodrevenge-cart", JSON.stringify(cartData));
+
+    // Update the display
+    if (window.displayCartItems) {
+      window.displayCartItems();
+    }
+    if (window.updateCartSummary) {
+      window.updateCartSummary();
+    }
+    if (window.updateCartCount) {
+      window.updateCartCount();
+    }
+
+    console.log("🔄 Page updated after decrease");
+  } else {
+    console.log("❌ Item not found for decrease");
+  }
+};
+
+// Enhanced remove function
+window.removeFromCart = function (productId, size) {
+  console.log("🗑️ REMOVE CLICKED:", productId, size);
+
+  const cartData = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  const updatedCart = cartData.filter(
+    (item) => !(item.id == productId && item.size === size),
+  );
+
+  localStorage.setItem("hoodrevenge-cart", JSON.stringify(updatedCart));
+
+  // Update the display
+  if (window.displayCartItems) {
+    window.displayCartItems();
+  }
+  if (window.updateCartSummary) {
+    window.updateCartSummary();
+  }
+  if (window.updateCartCount) {
+    window.updateCartCount();
+  }
+
+  console.log("✅ Item removed and page updated");
+};

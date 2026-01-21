@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -130,7 +130,7 @@
 
           // Get cart from localStorage
           let cart = JSON.parse(
-            localStorage.getItem("hoodrevenge-cart") || "[]"
+            localStorage.getItem("hoodrevenge-cart") || "[]",
           );
           console.log("Cart data:", cart);
 
@@ -181,8 +181,8 @@
                 <div class="cart-item" data-id="${item.id}">
                   <div class="item-image">
                     <img src="${imageUrl}" alt="${
-                  item.name
-                }" class="item-img" />
+                      item.name
+                    }" class="item-img" />
                   </div>
                   <div class="item-details">
                     <h3>${item.name}</h3>
@@ -224,7 +224,7 @@
                   </div>
                   <div class="item-actions">
                     <div class="item-total">R${(price * item.quantity).toFixed(
-                      2
+                      2,
                     )}</div>
                   </div>
                 </div>
@@ -245,21 +245,20 @@
           const vat = subtotal * 0.15; // 15% VAT for South Africa
           const total = subtotal + vat;
 
-          document.getElementById(
-            "cart-subtotal"
-          ).textContent = `R${subtotal.toFixed(2)}`;
+          document.getElementById("cart-subtotal").textContent =
+            `R${subtotal.toFixed(2)}`;
           document.getElementById("cart-vat").textContent = `R${vat.toFixed(
-            2
+            2,
           )}`;
           document.getElementById("cart-total").textContent = `R${total.toFixed(
-            2
+            2,
           )}`;
         }
 
         // Global function to update size
         window.updateSize = function (productId, newSize) {
           let cart = JSON.parse(
-            localStorage.getItem("hoodrevenge-cart") || "[]"
+            localStorage.getItem("hoodrevenge-cart") || "[]",
           );
 
           const item = cart.find((item) => item.id === productId);
@@ -293,7 +292,7 @@
           document.body.appendChild(notification);
           setTimeout(
             () => (notification.style.transform = "translateX(0)"),
-            100
+            100,
           );
           setTimeout(() => {
             notification.style.transform = "translateX(400px)";
@@ -304,7 +303,7 @@
         // Global functions for cart operations
         window.updateQuantity = function (productId, newQuantity) {
           let cart = JSON.parse(
-            localStorage.getItem("hoodrevenge-cart") || "[]"
+            localStorage.getItem("hoodrevenge-cart") || "[]",
           );
 
           if (newQuantity <= 0) {

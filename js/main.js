@@ -3,7 +3,7 @@
 const PRODUCT_CATALOG = {
   1: {
     id: 1,
-    name: "Tie-Dye Hoodie - Blue Design",
+    name: "1/1 REVAMP LEVI'S JEANS", // 🔥 FIXED: Real product name
     price: 650,
     images: {
       main: "images/Artboard 1 copy 8.jpg",
@@ -13,7 +13,7 @@ const PRODUCT_CATALOG = {
   },
   2: {
     id: 2,
-    name: "Tie-Dye Hoodie - Design 2",
+    name: "1/1 REVAMP LEVI'S JEANS - BLACK", // 🔥 FIXED: Real product name
     price: 650,
     images: {
       main: "images/Artboard 1 copy 3.jpg",
@@ -23,7 +23,7 @@ const PRODUCT_CATALOG = {
   },
   3: {
     id: 3,
-    name: "Tie-Dye Hoodie - Design 3",
+    name: "1/1 REVAMP ZARA JEANS", // 🔥 FIXED: Real product name
     price: 650,
     images: {
       main: "images/Artboard 1 copy 6.jpg",
@@ -33,7 +33,7 @@ const PRODUCT_CATALOG = {
   },
   4: {
     id: 4,
-    name: "Tie-Dye Hoodie - Green/Yellow",
+    name: "1/1 REVAMP LEVI'S JEANS - GREEN&YELLOW", // 🔥 FIXED: Real product name
     price: 650,
     images: {
       main: "images/Artboard 1.jpg",
@@ -43,22 +43,12 @@ const PRODUCT_CATALOG = {
   },
   5: {
     id: 5,
-    name: "Tie-Dye Hoodie - Blue Highlighted Design",
-    price: 650,
+    name: "1/1 REVAMP - CHARACTER WHITE T", // 🔥 FIXED: Real product name
+    price: 450, // 🔥 CHANGED: from 650 to 450
     images: {
       main: "images/Artboard 1 copy 7.jpg",
       back: "images/Artboard 1 copy 7-1.jpg",
       closeup: "images/Artboard 1 copy 7-2.jpg",
-    },
-  },
-  6: {
-    id: 6,
-    name: "Tie-Dye Hoodie - Design 6",
-    price: 650,
-    images: {
-      main: "images/Artboard 1 copy 6.jpg",
-      back: "images/Artboard 1 copy 6-1.jpg",
-      closeup: "images/Artboard 1 copy 6-2.jpg",
     },
   },
 };
@@ -77,9 +67,25 @@ function redirectToShop() {
   window.location.href = "shop.html";
 }
 
-// GLOBAL addToCart function
+// GLOBAL addToCart function - IMPROVED
 window.addToCart = function (id, name, price, images, size = "M") {
   console.log("🔥 ADD TO CART CALLED", { id, name, price, images, size });
+
+  // 🔥 GET THE CURRENT VISIBLE IMAGE from the page
+  const productCard = document.querySelector(`[data-id="${id}"]`);
+  let currentVisibleImage = images; // fallback to passed images
+
+  if (productCard) {
+    const visibleImg = productCard.querySelector(".product-main-image");
+    if (visibleImg && visibleImg.src) {
+      // Create updated images object with current visible image as main
+      currentVisibleImage = {
+        ...images,
+        main: visibleImg.src, // Use the currently visible image
+      };
+      console.log("✅ Using current visible image:", visibleImg.src);
+    }
+  }
 
   const cartData = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
 
@@ -95,7 +101,7 @@ window.addToCart = function (id, name, price, images, size = "M") {
       id: parseInt(id),
       name: name,
       price: price,
-      images: images,
+      images: currentVisibleImage, // Use the updated images with current visible
       size: size,
       quantity: 1,
     });
@@ -502,52 +508,201 @@ function updateCartCount() {
 }
 
 function showAddToCartMessage(productName) {
-  // Find product in PRODUCT_CATALOG (not the old products array)
-  const product = Object.values(PRODUCT_CATALOG).find(
-    (p) => p.name === productName,
-  );
-  const productImage = product
-    ? product.images.main
-    : "images/default-product.jpg";
+  console.log("🔍 Looking for product:", productName);
+
+  // 🔥 IMPROVED: More precise product matching
+  let productImage = "";
+  let productId = null;
+
+  // Method 1: Find by product ID first (most reliable)
+  const allProductCards = document.querySelectorAll(".product-card");
+  allProductCards.forEach((card) => {
+    const productNameElement = card.querySelector(".product-name");
+    const productMainImage = card.querySelector(".product-main-image");
+
+    if (productNameElement && productMainImage) {
+      const cardProductName = productNameElement.textContent.trim();
+      console.log("Checking card product:", cardProductName, "vs", productName);
+
+      // 🎯 PRECISE MATCHING: Check for key distinguishing words
+      const isMatch =
+        (productName.includes("GREEN&YELLOW") &&
+          cardProductName.includes("GREEN&YELLOW")) ||
+        (productName.includes("BLACK") &&
+          cardProductName.includes("BLACK") &&
+          !cardProductName.includes("GREEN")) ||
+        (productName.includes("ZARA") && cardProductName.includes("ZARA")) ||
+        (productName.includes("CHARACTER") &&
+          cardProductName.includes("CHARACTER")) ||
+        (productName.includes("LEVI'S") &&
+          cardProductName.includes("LEVI'S") &&
+          !cardProductName.includes("BLACK") &&
+          !cardProductName.includes("GREEN"));
+
+      if (isMatch) {
+        productImage = productMainImage.src;
+        productId = card.dataset.id;
+        console.log(
+          "✅ Found matching product:",
+          cardProductName,
+          "Image:",
+          productImage,
+        );
+        return; // Exit loop once found
+      }
+    }
+  });
+
+  // Method 2: If no match found, use catalog lookup by name
+  if (!productImage) {
+    console.log("🔍 Searching catalog for:", productName);
+
+    const catalogEntry = Object.values(PRODUCT_CATALOG).find((product) => {
+      const catalogName = product.name;
+      return (
+        (productName.includes("GREEN&YELLOW") &&
+          catalogName.includes("GREEN&YELLOW")) ||
+        (productName.includes("BLACK") && catalogName.includes("BLACK")) ||
+        (productName.includes("ZARA") && catalogName.includes("ZARA")) ||
+        (productName.includes("CHARACTER") &&
+          catalogName.includes("CHARACTER")) ||
+        (productName.includes("LEVI'S") &&
+          catalogName.includes("LEVI'S") &&
+          !catalogName.includes("BLACK") &&
+          !catalogName.includes("GREEN"))
+      );
+    });
+
+    if (catalogEntry) {
+      productImage = catalogEntry.images.main;
+      console.log("✅ Using catalog image:", productImage);
+    }
+  }
+
+  // Method 3: Final fallback
+  if (!productImage) {
+    productImage = "images/Artboard 1 copy 8.jpg";
+    console.log("⚠️ Using fallback image");
+  }
+
+  console.log("🎯 Final notification image:", productImage);
 
   const notification = document.createElement("div");
   notification.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <img src="${productImage}" alt="${productName}" style="
-        width: 60px; 
-        height: 60px; 
-        border-radius: 10px; 
-        object-fit: cover;
-        border: 2px solid #ffffff;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+     <div style="display: flex; align-items: center; gap: 15px;">
+    <img src="${productImage}" alt="${productName}" style="
+      width: 60px; 
+      height: 60px; 
+      border-radius: 10px; 
+      object-fit: cover;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    " onload="console.log('✅ Notification image loaded:', this.src)" 
+       onerror="console.log('❌ Notification image failed - trying fallback'); this.src='images/Artboard 1 copy 8.jpg';">
+    <div style="flex: 1;">
+      <strong style="font-size: 14px; color: white;">${productName}</strong> 
+      <span style="font-size: 12px; color: #cccccc;">(Size M) added to cart!</span>
+      <br><small style="color: #cccccc; font-size: 11px;">Premium South African Streetwear</small>
+      
+      <!-- 🔥 STYLED CLICK BUTTON -->
+      <div style="
+        margin-top: 12px;
+        padding: 8px 16px;
+       
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 25px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        user-select: none;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+      " 
+      onmouseover="
+        this.style.background = 'linear-gradient(135deg, #45a049, #4CAF50)';
+        this.style.transform = 'translateY(-1px) scale(1.05)';
+        this.style.boxShadow = '0 6px 20px rgba(76, 175, 80, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
+        this.style.borderColor = 'rgba(255, 255, 255, 1)';
+      "
+      onmouseout="
+      
+        this.style.transform = 'translateY(0) scale(1)';
+        this.style.boxShadow = '0 4px 15px rgba(76, 175, 80, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+        this.style.borderColor = 'rgba(255, 255, 255, 0.8)';
       ">
-      <div>
-        <strong>${productName}</strong> (Size M) added to cart!
-        <br><small>Premium South African Streetwear</small>
+        Click to View Cart
+        <!-- Shine effect -->
+        <span style="
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+          transition: left 0.5s ease;
+        "></span>
       </div>
     </div>
+  </div>
   `;
+
   notification.style.cssText = `
     position: fixed;
     top: 100px;
     right: 20px;
-    background: #2c2c2c;
+    background: rgba(44, 44, 44, 0.98);
     color: white;
     padding: 1rem 1.5rem;
     border-radius: 15px;
     z-index: 10000;
     box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
     transform: translateX(400px);
-    transition: transform 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     min-width: 320px;
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
   `;
+
+  // 🔥 ADD CLICK EVENT: Redirect to cart page
+  notification.addEventListener("click", function () {
+    console.log("🛒 Redirecting to cart page...");
+    window.location.href = "cart.html";
+  });
+
+  // 🔥 ADD HOVER EFFECTS: Make it obvious it's clickable
+  notification.addEventListener("mouseenter", function () {
+    this.style.transform = "translateX(0) scale(1.05)";
+    this.style.background = "rgba(44, 44, 44, 1)";
+    this.style.boxShadow = "0 12px 40px rgba(0,0,0,0.6)";
+  });
+
+  notification.addEventListener("mouseleave", function () {
+    this.style.transform = "translateX(0) scale(1)";
+    this.style.background = "rgba(44, 44, 44, 0.98)";
+    this.style.boxShadow = "0 8px 30px rgba(0,0,0,0.4)";
+  });
 
   document.body.appendChild(notification);
   setTimeout(() => (notification.style.transform = "translateX(0)"), 100);
+
+  // 🔥 LONGER DISPLAY TIME: Give users more time to click
   setTimeout(() => {
     notification.style.transform = "translateX(400px)";
-    setTimeout(() => document.body.removeChild(notification), 300);
-  }, 4000);
+    setTimeout(() => {
+      if (notification.parentNode) {
+        document.body.removeChild(notification);
+      }
+    }, 300);
+  }, 6000); // 🔥 CHANGED: from 4000ms to 6000ms (6 seconds)
 }
 
 // Export functions for use in other files

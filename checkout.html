@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -147,11 +147,6 @@
                     margin-bottom: 10px;
                   "
                 >
-                  <img
-                    src="https://my.payfast.io/images/buttons/logo-payfast-small.png"
-                    alt="PayFast"
-                    style="height: 24px"
-                  />
                   <span
                     id="payfast-amount"
                     style="font-weight: bold; color: #2c2c2c"
@@ -179,10 +174,16 @@
                     margin-top: 15px;
                     transition: all 0.3s ease;
                   "
-                  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,123,255,0.3)'"
-                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                  onmouseover="
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 12px rgba(0,123,255,0.3)';
+                  "
+                  onmouseout="
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                  "
                 >
-                  🔒 Pay Now - <span id="button-total">R747.50</span>
+                  Pay Now - <span id="button-total">R747.50</span>
                 </button>
               </div>
             </div>
