@@ -15,29 +15,24 @@
     <nav class="navbar">
       <div class="nav-container">
         <div class="logo">
-          <img
-            src="images/hood-logo.png"
-            alt="HoodRevenge Logo"
-            style="height: 80px"
-          />
-        </div>
-
-        <!-- Desktop Navigation -->
-        <div class="nav-menu desktop-nav">
-          <a href="index.html">HOME</a>
-          <a href="#products-section" onclick="scrollToProducts()">SHOP</a>
-          <a href="about.html">ABOUT</a>
-          <a href="contact.html">CONTACT</a>
-        </div>
-
-        <!-- Desktop Cart -->
-        <div class="nav-actions desktop-nav">
-          <a href="cart.html" class="cart-link">
-            CART (<span id="cart-count">0</span>)
+          <a href="index.html">
+            <img src="images/hood-logo.png" alt="HoodRevenge Logo" />
           </a>
         </div>
 
-        <!-- Mobile Menu Toggle Button -->
+        <!-- DESKTOP Navigation -->
+        <ul class="nav-links desktop-nav">
+          <li>
+            <a href="#products-section" onclick="scrollToProducts()">SHOP</a>
+          </li>
+          <li>
+            <a href="cart.html" class="cart-link">
+              CART (<span id="cart-count">0</span>)
+            </a>
+          </li>
+        </ul>
+
+        <!-- MOBILE Menu Toggle - THIS WAS MISSING! -->
         <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
           <div class="hamburger-icon">
             <span></span>
@@ -47,24 +42,13 @@
         </div>
       </div>
 
-      <!-- Mobile Full-Screen Menu - WITH FIXED LOGO -->
+      <!-- Mobile Menu Overlay -->
       <div class="mobile-menu-overlay" id="mobileMenuOverlay">
         <div class="mobile-menu-content">
-          <!-- 🔥 FIXED: Logo positioned on left side - FORCE BLACK -->
+          <!-- 🔥 ENSURE: Logo is HERE and visible -->
           <div class="mobile-menu-header">
-            <img
-              src="images/hood-logo.png"
-              alt="HoodRevenge"
-              class="mobile-logo"
-              style="
-                height: 80px;
-                width: auto;
-                filter: brightness(0) !important;
-              "
-            />
+            <img src="images/hood-logo-black.png" alt="HoodRevenge" class="mobile-logo" />
           </div>
-
-          <!-- Centered navigation links -->
           <div class="mobile-menu-links">
             <a
               href="#products-section"
@@ -78,9 +62,8 @@
               href="cart.html"
               class="mobile-cart-link"
               onclick="toggleMobileMenu()"
+              >CART (<span id="mobile-cart-count">0</span>)</a
             >
-              CART (<span id="mobile-cart-count">0</span>)
-            </a>
           </div>
         </div>
       </div>
@@ -119,6 +102,9 @@
     <!-- Products Section -->
     <section class="products" id="products-section">
       <div class="container">
+    <!-- Products Section -->
+    <section class="products" id="products-section">
+      <div class="container">
         <h2>HOOD - SEASON 01</h2>
         <div class="products-grid">
           <!-- Product 1 -->
@@ -143,16 +129,21 @@
               <button
                 class="add-to-cart-btn"
                 onclick="
+                  console.log('🔍 Adding product with images:', {
+                    main: 'images/Artboard 1 copy 8.jpg',
+                    back: 'images/Artboard 1 copy 8-1.jpg',
+                    closeup: 'images/Artboard 1 copy 8-2.jpg'
+                  });
                   addToCart(
                     1,
-                    'Tie-Dye Hoodie - Blue Design',
+                    '1/1 REVAMP LEVI\'S JEANS',
                     650,
                     {
                       main: 'images/Artboard 1 copy 8.jpg',
                       back: 'images/Artboard 1 copy 8-1.jpg',
                       closeup: 'images/Artboard 1 copy 8-2.jpg',
                     },
-                    'M',
+                    'M'
                   )
                 "
               >
@@ -185,7 +176,7 @@
                 onclick="
                   addToCart(
                     2,
-                    'Tie-Dye Hoodie - Design 2',
+                    '1/1 REVAMP LEVI\'S JEANS - BLACK',
                     650,
                     {
                       main: 'images/Artboard 1 copy 3.jpg',
@@ -225,7 +216,7 @@
                 onclick="
                   addToCart(
                     3,
-                    'Tie-Dye Hoodie - Design 3',
+                    '1/1 REVAMP ZARA JEANS',
                     650,
                     {
                       main: 'images/Artboard 1 copy 6.jpg',
@@ -267,7 +258,7 @@
                 onclick="
                   addToCart(
                     4,
-                    'Tie-Dye Hoodie - Green/Yellow',
+                    '1/1 REVAMP LEVI\'S JEANS - GREEN&YELLOW',
                     650,
                     {
                       main: 'images/Artboard 1.jpg',
@@ -301,25 +292,25 @@
             </div>
             <div class="product-info">
               <h3 class="product-name">1/1 REVAMP - CHARACTER white T</h3>
-              <p class="product-price">R650</p>
-              <button
-                class="add-to-cart-btn"
-                onclick="
-                  addToCart(
-                    5,
-                    'Tie-Dye Hoodie - Blue Highlighted Design',
-                    650,
-                    {
-                      main: 'images/Artboard 1 copy 7.jpg',
-                      back: 'images/Artboard 1 copy 7-1.jpg',
-                      closeup: 'images/Artboard 1 copy 7-2.jpg',
-                    },
-                    'M',
-                  )
-                "
-              >
-                Add to Cart
-              </button>
+              <p class="product-price">R450</p>
+             <button
+  class="add-to-cart-btn"
+  onclick="
+    addToCart(
+      5,
+      '1/1 REVAMP - CHARACTER WHITE T',
+      450, // 🔥 CHANGED: from 650 to 450 to match display price
+      {
+        main: 'images/Artboard 1 copy 7.jpg',
+        back: 'images/Artboard 1 copy 7-1.jpg',
+        closeup: 'images/Artboard 1 copy 7-2.jpg',
+      },
+      'M',
+    )
+  "
+>
+  Add to Cart
+</button>
             </div>
           </div>
 

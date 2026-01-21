@@ -84,7 +84,7 @@ window.removeFromCart = function (productId, size) {
 
 window.updateQuantity = function (productId, size, newQuantity) {
   console.log(
-    `🔄 Update quantity: ID ${productId}, Size ${size}, New quantity: ${newQuantity}`
+    `🔄 Update quantity: ID ${productId}, Size ${size}, New quantity: ${newQuantity}`,
   );
 
   let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
@@ -106,7 +106,7 @@ window.updateSize = function (productId, oldSize, newSize) {
 
   let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
   const item = cart.find(
-    (item) => item.id == productId && item.size === oldSize
+    (item) => item.id == productId && item.size === oldSize,
   );
 
   if (item) {
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, '${size}', ${item.quantity + 1})">+</button>
               </div>
               <div class="item-total">R${(price * item.quantity).toFixed(
-                2
+                2,
               )}</div>
               <button class="remove-item" onclick="removeFromCart(${
                 item.id
@@ -299,7 +299,7 @@ const PRODUCT_CATALOG = {
   5: {
     id: 5,
     name: "Tie-Dye Hoodie - Blue Highlighted Design",
-    price: 650,
+    price: 450, // 🔥 CHANGED: from 650 to 450
     images: {
       main: "images/Artboard 1 copy 7.jpg",
       back: "images/Artboard 1 copy 7-1.jpg",
@@ -324,7 +324,7 @@ function addToCart(productId, productName, price, images, size = "M") {
 
   // Check if product with same ID and size already exists
   const existingItemIndex = cart.findIndex(
-    (item) => item.id === productId && item.size === size
+    (item) => item.id === productId && item.size === size,
   );
 
   if (existingItemIndex > -1) {
@@ -369,7 +369,7 @@ function updateQuantity(productId, size, newQuantity) {
   let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
 
   const itemIndex = cart.findIndex(
-    (item) => item.id === productId && item.size === size
+    (item) => item.id === productId && item.size === size,
   );
 
   if (itemIndex > -1) {
@@ -427,5 +427,229 @@ function proceedToCheckout() {
   window.location.href = "checkout.html";
 }
 
-// UPDATE your checkout button in cart.html
-// <button onclick="proceedToCheckout()" class="checkout-btn">Proceed to Checkout</button>
+// 🔥 FIXED: showCartNotification function - with correct image fallback
+
+function showCartNotification(product) {
+  console.log("🔍 Showing notification for product:", product);
+  console.log("🖼️ Product images object:", product.images);
+
+  // Remove any existing notifications
+  const existingNotification = document.querySelector(".cart-notification");
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+
+  // 🔥 FIXED: Get the correct image path - try multiple sources
+  let thumbnailSrc = "";
+
+  // First try: product images
+  if (product.images && product.images.main) {
+    thumbnailSrc = product.images.main;
+    console.log("✅ Using product.images.main:", thumbnailSrc);
+  }
+  // Second try: find the actual image from the DOM
+  else {
+    const productImages = document.querySelectorAll('img[src*="Artboard"]');
+    if (productImages.length > 0) {
+      // Use the first available product image
+      thumbnailSrc = productImages[0].src;
+      console.log("✅ Using DOM image:", thumbnailSrc);
+    }
+  }
+
+  // Final fallback - use the image that's actually visible
+  if (!thumbnailSrc) {
+    thumbnailSrc = "images/default-product.jpg"; // This matches your HTML
+    console.log("⚠️ Using default fallback:", thumbnailSrc);
+  }
+
+  console.log("🎯 Final thumbnail source:", thumbnailSrc);
+
+  // Create notification with thumbnail
+  const notification = document.createElement("div");
+  notification.className = "cart-notification";
+
+  notification.innerHTML = `
+    <div class="notification-content">
+      <div class="notification-thumbnail">
+        <img src="${thumbnailSrc}" 
+             alt="${product.name}" 
+             class="notification-image"
+             onload="console.log('✅ Image loaded successfully:', this.src)"
+             onerror="console.log('❌ Image failed to load:', this.src); this.src='images/default-product.jpg';">
+      </div>
+      <div class="notification-text">
+        <h4>${product.name} (Size ${product.size})</h4>
+        <p>added to cart!</p>
+        <small>Premium South African Streetwear</small>
+      </div>
+    </div>
+  `;
+
+  // Add to page
+  document.body.appendChild(notification);
+
+  // Show notification with animation
+  setTimeout(() => {
+    notification.classList.add("show");
+  }, 100);
+
+  // Hide and remove after 3 seconds
+  setTimeout(() => {
+    notification.classList.remove("show");
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
+  }, 3000);
+}
+
+// 🔥 UPDATED: addToCart function with better logging
+function addToCart(id, name, price, images, size) {
+  console.log("🛒 addToCart called with:", { id, name, price, images, size });
+
+  // Create product object with proper structure
+  const product = {
+    id: id,
+    name: name,
+    price: price,
+    images: images, // This should be the object with main, back, closeup
+    size: size,
+    quantity: 1,
+  };
+
+  console.log("📦 Product object created:", product);
+
+  // Get existing cart
+  let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+
+  // Check if product already exists
+  const existingItem = cart.find(
+    (item) => item.id === id && item.size === size,
+  );
+
+  if (existingItem) {
+    existingItem.quantity += 1;
+    console.log("➕ Updated existing item quantity");
+  } else {
+    cart.push(product);
+    console.log("🆕 Added new item to cart");
+  }
+
+  // Save cart
+  localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+
+  // Update cart count
+  updateCartCount();
+
+  // 🔥 SHOW NOTIFICATION: with the product object that has images
+  showCartNotification(product);
+
+  console.log("✅ Cart updated, notification shown");
+}
+
+// 🔥 ENSURE: addToCart function passes images correctly
+function addToCart(id, name, price, images, size) {
+  console.log("🛒 addToCart called with images:", images);
+
+  const product = {
+    id: id,
+    name: name,
+    price: price,
+    images: images, // Should be {main: 'path', back: 'path', closeup: 'path'}
+    size: size,
+    quantity: 1,
+  };
+
+  console.log("📦 Product object created with images:", product.images);
+
+  // Get existing cart
+  let cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+
+  // Check if product already exists
+  const existingItem = cart.find(
+    (item) => item.id === id && item.size === size,
+  );
+
+  if (existingItem) {
+    existingItem.quantity += 1;
+    console.log("➕ Updated existing item quantity");
+  } else {
+    cart.push(product);
+    console.log("🆕 Added new item to cart");
+  }
+
+  // Save cart
+  localStorage.setItem("hoodrevenge-cart", JSON.stringify(cart));
+
+  // Update cart count
+  updateCartCount();
+
+  // 🔥 SHOW NOTIFICATION: with the product object that has images
+  showCartNotification(product);
+
+  console.log("✅ Cart updated, notification shown");
+}
+
+// 🔥 EVEN BETTER: Get image from the clicked product
+function showCartNotification(product) {
+  console.log("🔍 Showing notification for product:", product);
+
+  // Remove existing notifications
+  const existingNotification = document.querySelector(".cart-notification");
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+
+  // 🔥 SMART: Find the image from the product that was just added
+  let thumbnailSrc = "";
+
+  // Find the current product image on the page
+  const currentProductImage = document.querySelector(
+    '.product-main-image, .hero-main img, img[alt*="REVAMP"]',
+  );
+  if (currentProductImage && currentProductImage.src) {
+    thumbnailSrc = currentProductImage.src;
+    console.log("✅ Using current product image:", thumbnailSrc);
+  } else {
+    // Use catalog images
+    const catalogProduct = PRODUCT_CATALOG[product.id];
+    thumbnailSrc =
+      catalogProduct?.images?.main || "images/Artboard 1 copy 8.jpg";
+    console.log("✅ Using catalog image:", thumbnailSrc);
+  }
+
+  console.log("🎯 Final thumbnail source:", thumbnailSrc);
+
+  const notification = document.createElement("div");
+  notification.className = "cart-notification";
+
+  notification.innerHTML = `
+    <div class="notification-content">
+      <div class="notification-thumbnail">
+        <img src="${thumbnailSrc}" 
+             alt="${product.name}" 
+             class="notification-image"
+             onload="console.log('✅ Thumbnail loaded:', this.src)"
+             onerror="console.log('❌ Failed to load:', this.src)">
+      </div>
+      <div class="notification-text">
+        <h4>${product.name} (Size ${product.size})</h4>
+        <p>added to cart!</p>
+        <small>Premium South African Streetwear</small>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(notification);
+  setTimeout(() => notification.classList.add("show"), 100);
+  setTimeout(() => {
+    notification.classList.remove("show");
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
+  }, 3000);
+}

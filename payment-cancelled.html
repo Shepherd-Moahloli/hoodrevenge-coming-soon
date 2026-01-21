@@ -1,9 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Payment Cancelled - HoodRevenge</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/main.css" />
     <style>
       body {
@@ -112,35 +116,73 @@
     </style>
   </head>
   <body class="white-bg">
+    <!-- Navigation -->
     <nav class="navbar">
       <div class="nav-container">
         <div class="logo">
-          <a href="shop.html">
-            <img
-              src="images/hood-logo-black.png"
-              alt="HoodRevenge Logo"
-              style="height: 100px"
-            />
+          <a href="index.html">
+            <img src="images/hood-logo.png" alt="HoodRevenge Logo" />
           </a>
         </div>
+        <ul class="nav-links">
+          <li><a href="shop.html">SHOP</a></li>
+          <li>
+            <a href="cart.html" class="cart-link"
+              >CART (<span id="cart-count">0</span>)</a
+            >
+          </li>
+        </ul>
       </div>
     </nav>
 
-    <section class="cancelled-section">
+    <!-- Payment Cancelled Content -->
+    <section class="payment-status">
       <div class="container">
-        <div class="cancelled-icon">❌</div>
-        <h1>Payment Cancelled</h1>
-        <p>Your payment was cancelled. No charges were made to your account.</p>
-        <p>Your items are still in your cart if you'd like to try again.</p>
+        <div class="status-card cancelled">
+          <div class="status-icon">
+            <span style="font-size: 4rem; color: #ff6b6b">❌</span>
+          </div>
+          <h1>Payment Cancelled</h1>
+          <p>
+            No worries! Your payment was cancelled and no charges were made.
+          </p>
+          <p>Your cart items are still saved if you'd like to try again.</p>
 
-        <div class="actions">
-          <a href="checkout.html" class="cta-btn">Try Payment Again</a>
-          <a href="cart.html" class="cta-btn secondary">View Cart</a>
-          <a href="shop.html" class="cta-btn secondary">Continue Shopping</a>
+          <div class="action-buttons">
+            <a href="cart.html" class="btn-primary">Return to Cart</a>
+            <a href="shop.html" class="btn-secondary">Continue Shopping</a>
+          </div>
+
+          <div class="help-section">
+            <p>Need help? Contact us:</p>
+            <p>
+              Email:
+              <a href="mailto:support@hoodrevenge.co.za"
+                >support@hoodrevenge.co.za</a
+              >
+            </p>
+            <p>
+              WhatsApp:
+              <a href="https://wa.me/27123456789">+27 123 456 789</a>
+            </p>
+          </div>
         </div>
       </div>
     </section>
 
-    <script src="js/main.js"></script>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2026 HoodRevenge. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="js/cart.js"></script>
+    <script>
+      // Update cart count on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        updateCartCount();
+      });
+    </script>
   </body>
 </html>

@@ -1,115 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>HoodRevenge - Coming Soon</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
-      rel="stylesheet"
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HoodRevenge - Premium South African Streetwear</title>
+    <meta
+      name="description"
+      content="Premium tie-dye hoodies and streetwear. Now live! Shop exclusive South African designs."
     />
-    <link rel="stylesheet" href="css/styles.css" />
-    <meta name="theme-color" content="#fefefe" />
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+
+    <!-- Instant redirect to shop -->
+    <meta http-equiv="refresh" content="0; url=shop.html" />
+
+    <!-- SEO and social media tags -->
+    <meta
+      property="og:title"
+      content="HoodRevenge - Premium Streetwear Now Live!"
+    />
+    <meta
+      property="og:description"
+      content="Shop exclusive tie-dye hoodies and premium streetwear designs."
+    />
+    <meta property="og:image" content="images/hood-logo.png" />
+    <meta property="og:url" content="https://hoodrevenge.co.za" />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: #2c2c2c;
+        color: white;
+        text-align: center;
+        padding: 50px 20px;
+        margin: 0;
+      }
+      .redirect-message {
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .logo {
+        width: 150px;
+        height: auto;
+        margin-bottom: 30px;
+      }
+      .shop-link {
+        background: #ffffff;
+        color: #2c2c2c;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+      }
+      .shop-link:hover {
+        background: #f0f0f0;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+      }
+    </style>
   </head>
   <body>
-    <main class="container">
-      <div class="card" role="region" aria-labelledby="hero-title">
-        <header class="brand"></header>
+    <div class="redirect-message">
+      <img src="images/hood-logo.png" alt="HoodRevenge Logo" class="logo" />
+      <h1>🔥 WE'RE LIVE! 🔥</h1>
+      <p>Redirecting you to our premium streetwear collection...</p>
+      <p>
+        If you're not redirected automatically,
+        <a href="shop.html" class="shop-link">CLICK HERE TO SHOP</a>
+      </p>
+    </div>
 
-        <section class="hero">
-          <div class="video-container">
-            <video
-              autoplay
-              muted
-              loop
-              playsinline
-              preload="metadata"
-              poster="VIDEO/poster.jpg"
-            >
-              <source src="VIDEO/IMG_3436.webm" type="video/webm" />
-              <source src="VIDEO/IMG_3436.mp4" type="video/mp4" />
-              <source src="VIDEO/IMG_3436.mov" type="video/quicktime" />
-              Your browser does not support the video tag.
-            </video>
-            <div class="video-overlay" id="video-loading">
-              <div class="loading-spinner"></div>
-            </div>
-          </div>
-
-          <div class="countdown" aria-hidden="false">
-            <div class="time">
-              <span id="days">00</span>
-              <small>Days</small>
-            </div>
-            <div class="time">
-              <span id="hours">00</span>
-              <small>Hours</small>
-            </div>
-            <div class="time">
-              <span id="mins">00</span>
-              <small>Mins</small>
-            </div>
-            <div class="time">
-              <span id="secs">00</span>
-              <small>Secs</small>
-            </div>
-          </div>
-
-          <form
-            id="subscribe-form"
-            class="subscribe"
-            action="https://formspree.io/f/xyzlnpqe"
-            method="POST"
-            onsubmit="subscribe(event)"
-          >
-            <label for="email" class="visually-hidden">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Enter your email to get updates"
-              required
-              autocomplete="email"
-            />
-            <button type="submit" class="btn">Notify Me</button>
-          </form>
-
-          <div id="form-message" class="form-message"></div>
-
-          <p class="note">
-            Or email us at
-            <a href="mailto:shepherdmoahloli122@gmail.com"
-              >shepherdmoahloli122@gmail.com</a
-            >
-          </p>
-
-          <nav class="social" aria-label="social links">
-            <a href="#" aria-label="Twitter" title="Twitter" class="icon">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path
-                  d="M22 5.924a8.193 8.193 0 0 1-2.357.646A4.117 4.117 0 0 0 21.447 4a8.224 8.224 0 0 1-2.605.996A4.108 4.108 0 0 0 11.5 8.083 11.657 11.657 0 0 1 3.15 4.645a4.106 4.106 0 0 0 1.27 5.482A4.072 4.072 0 0 1 2.8 9.65v.05a4.107 4.107 0 0 0 3.292 4.025 4.1 4.1 0 0 1-1.852.07 4.108 4.108 0 0 0 3.834 2.85A8.233 8.233 0 0 1 2 19.543a11.616 11.616 0 0 0 6.29 1.842c7.547 0 11.675-6.254 11.675-11.675 0-.178-.004-.355-.012-.53A8.354 8.354 0 0 0 22 5.924z"
-                />
-              </svg>
-            </a>
-            <a href="#" aria-label="Instagram" title="Instagram" class="icon">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path
-                  d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 6.5A4.5 4.5 0 1 0 16.5 13 4.505 4.505 0 0 0 12 8.5zM18.5 6a1 1 0 1 1-1 1 1 1 0 0 1 1-1z"
-                />
-              </svg>
-            </a>
-          </nav>
-        </section>
-
-        <footer class="foot">
-          <small
-            >&copy; <span id="year"></span> HoodRevenge. All rights
-            reserved.</small
-          >
-        </footer>
-      </div>
-    </main>
-
-    <script src="script.js"></script>
+    <script>
+      // Backup JavaScript redirect
+      setTimeout(function () {
+        window.location.href = "shop.html";
+      }, 2000);
+    </script>
   </body>
 </html>

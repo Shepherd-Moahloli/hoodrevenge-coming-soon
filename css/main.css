@@ -39,10 +39,16 @@ body {
 }
 
 .navbar.scrolled {
+  background: rgba(
+    255,
+    255,
+    255,
+    0.95
+  ) !important; /* White background when scrolled */
   backdrop-filter: blur(15px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   padding: 0.8rem 0;
-  height: 115px;
+  height: auto !important; /* Remove fixed height */
 }
 
 .nav-container {
@@ -55,16 +61,32 @@ body {
 }
 
 .logo img {
-  height: 80px;
-  width: auto;
-
-  transition: filter 0.3s ease;
+  height: 80px !important;
+  width: auto !important;
+  transition: all 0.3s ease;
+  filter: none;
 }
 
-/* Remove shadow when navbar is scrolled (black logo) */
+/* 🔥 BLACK LOGO when navbar is scrolled */
 .navbar.scrolled .logo img {
-  filter: none;
-  height: 80%;
+  filter: brightness(0) !important;
+  height: 80px !important; /* KEEP 80px when scrolled */
+  width: auto !important;
+  transition: all 0.3s ease;
+}
+
+/* Mobile logo sizing */
+@media (max-width: 768px) {
+  .logo img {
+    height: 80px !important; /* INCREASED from 45px to 80px */
+    width: auto !important;
+  }
+
+  .navbar.scrolled .logo img {
+    height: 80px !important; /* KEEP 80px when scrolled on mobile */
+    filter: brightness(0) !important;
+    width: auto !important;
+  }
 }
 
 .nav-menu {
@@ -494,7 +516,8 @@ body {
   }
 
   .logo img {
-    height: 45px; /* ALSO reduced main navbar logo for consistency */
+    height: 80px !important; /* INCREASED from 45px to 80px */
+    width: auto !important;
   }
 
   /* Ensure proper z-index layering */
@@ -901,7 +924,8 @@ body {
   }
 
   .logo img {
-    height: 45px; /* ALSO reduced main navbar logo for consistency */
+    height: 80px !important; /* INCREASED from 45px to 80px */
+    width: auto !important;
   }
 
   /* Ensure proper z-index layering */
@@ -1233,7 +1257,6 @@ body.mobile-menu-open .hamburger-icon span {
 
   /* Empty cart message - full width */
   .empty-cart {
-    width: 100% !important;
     text-align: center !important;
     padding: 40px 15px !important;
   }
@@ -1867,9 +1890,174 @@ body.mobile-menu-open .hamburger-icon span {
 }
 
 /* 🔥 OVERRIDE: Any desktop-only hiding behavior */
-@media (min-width: 769px) {
-  /* Keep existing desktop hover behavior if needed */
-  .image-controls {
-    /* Your existing desktop styles */
+
+/* 🔥 CLEAN NAVBAR - NO BACKGROUNDS - EXACT CART MATCH */
+
+/* Clean navigation links - NO backgrounds */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  color: #ffffff !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.nav-links a:hover {
+  color: #f0f0f0 !important;
+  text-decoration: none !important;
+}
+
+/* Cart link - ONLY border, no background */
+.cart-link {
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  padding: 8px 16px !important;
+  border-radius: 25px !important;
+  background: none !important;
+}
+
+.cart-link:hover {
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  background: none !important;
+  color: #ffffff !important;
+}
+
+/* When navbar is scrolled - black text */
+.navbar.scrolled .nav-links a {
+  color: #2c2c2c !important;
+}
+
+.navbar.scrolled .cart-link {
+  border: 1px solid rgba(44, 44, 44, 0.3) !important;
+  background: none !important;
+}
+
+.navbar.scrolled .cart-link:hover {
+  border: 1px solid rgba(44, 44, 44, 0.6) !important;
+  background: none !important;
+}
+
+/* Force remove ALL backgrounds and underlines */
+.navbar a,
+.navbar a:hover,
+.navbar a:focus,
+.navbar a:active {
+  text-decoration: none !important;
+
+  box-shadow: none !important;
+  outline: none !important;
+  background: none !important;
+}
+
+/* 🔥 ADD: Cart notification with product thumbnail - ADD TO MAIN.CSS */
+
+.cart-notification {
+  position: fixed;
+  top: 100px;
+  right: -400px;
+  width: 350px;
+  background: rgba(44, 44, 44, 0.95);
+  color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  z-index: 10000;
+  transition: all 0.3s ease;
+}
+
+.cart-notification.show {
+  right: 20px;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* 🔥 THUMBNAIL: Product image in notification */
+.notification-thumbnail {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f0f0f0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+  border-radius: 6px !important;
+  background-color: #e0e0e0;
+}
+
+.notification-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-text h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.notification-text p {
+  margin: 0 0 4px 0;
+  font-size: 0.8rem;
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+.notification-text small {
+  font-size: 0.75rem;
+  color: #ffffff;
+  opacity: 0.7;
+}
+
+/* Mobile notification adjustments */
+@media (max-width: 768px) {
+  .cart-notification {
+    width: calc(100vw - 40px);
+    right: -100vw;
+    top: 80px;
+  }
+
+  .cart-notification.show {
+    right: 20px;
+  }
+
+  .notification-thumbnail {
+    width: 50px;
+    height: 50px;
+  }
+
+  .notification-text h4 {
+    font-size: 0.85rem;
   }
 }

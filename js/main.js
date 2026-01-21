@@ -195,6 +195,43 @@ function initNavbar() {
   });
 }
 
+// 🔥 SCROLL HANDLER: Add navbar scroll effect with logo color change
+
+window.addEventListener("scroll", function () {
+  const navbar = document.querySelector(".navbar");
+  const scrolled = window.pageYOffset;
+
+  if (scrolled > 100) {
+    navbar.classList.add("scrolled");
+  } else {
+    navbar.classList.remove("scrolled");
+  }
+});
+
+// 🔥 ENSURE: Scroll handler runs on page load
+document.addEventListener("DOMContentLoaded", function () {
+  // Check scroll position on load
+  const navbar = document.querySelector(".navbar");
+  const scrolled = window.pageYOffset;
+
+  if (scrolled > 100) {
+    navbar.classList.add("scrolled");
+  } else {
+    navbar.classList.remove("scrolled");
+  }
+
+  // Add scroll listener
+  window.addEventListener("scroll", function () {
+    const scrolled = window.pageYOffset;
+
+    if (scrolled > 100) {
+      navbar.classList.add("scrolled");
+    } else {
+      navbar.classList.remove("scrolled");
+    }
+  });
+});
+
 function initializeProductImageSwitching() {
   console.log("🔄 Setting up image switching and zoom effects...");
 
