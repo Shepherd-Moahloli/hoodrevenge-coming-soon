@@ -14,103 +14,226 @@
         margin: 0;
         padding: 0;
         min-height: 100vh;
+        background: #ffffff;
+        font-family: "Inter", sans-serif;
         display: flex;
         flex-direction: column;
       }
 
       .navbar {
-        flex-shrink: 0; /* Keep navbar at top */
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid #f0f0f0;
+        z-index: 1000;
       }
 
-      .cancelled-section {
+      .payment-status {
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 60px 20px;
+        padding: 40px 20px;
+        min-height: calc(100vh - 160px);
+      }
+
+      .status-card {
+        background: #ffffff;
+        border: 2px solid #f0f0f0;
+        border-radius: 16px;
+        padding: 60px 40px;
         text-align: center;
-        background: #fff;
-        min-height: calc(100vh - 120px); /* Account for navbar height */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        max-width: 500px;
+
+        position: relative;
       }
 
-      .container {
-        max-width: 600px;
-        width: 100%;
-        margin: 0 auto;
-      }
-
-      .cancelled-icon {
-        font-size: 80px;
+      .status-icon {
         margin-bottom: 30px;
-        color: #e74c3c;
-      }
-
-      .cancelled-section h1 {
-        color: #e74c3c;
-        font-size: 2.5rem;
-        margin-bottom: 20px;
-        font-weight: 600;
-      }
-
-      .cancelled-section p {
-        font-size: 1.2rem;
-        color: #666;
-        margin-bottom: 20px;
-        line-height: 1.6;
-      }
-
-      .actions {
         display: flex;
-        gap: 20px;
+        justify-content: center;
+      }
+
+      .cancel-icon {
+        width: 80px;
+        height: 80px;
+        background: #ffffff;
+        border: 3px solid #ff4444;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .cancel-icon::before {
+        content: "✕";
+        font-size: 32px;
+        color: #ff4444;
+        font-weight: bold;
+      }
+
+      .status-icon {
+        margin-top: 70px;
+      }
+
+      .status-card h1 {
+        color: #ff4444;
+        font-size: 2.4rem;
+        margin-bottom: 20px;
+        font-weight: 700;
+      }
+
+      .status-card p {
+        font-size: 1.1rem;
+        color: #666666;
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+
+      .status-card p:first-of-type {
+        color: #333333;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 16px;
         justify-content: center;
         flex-wrap: wrap;
-        margin-top: 40px;
+        margin: 40px 0 30px 0;
       }
 
-      .cta-btn {
+      .btn-primary,
+      .btn-secondary {
         display: inline-block;
-        padding: 15px 30px;
-        background: #2c2c2c;
-        color: white;
+        padding: 14px 28px;
         text-decoration: none;
         border-radius: 8px;
         font-weight: 600;
+        font-size: 0.95rem;
         transition: all 0.3s ease;
         min-width: 160px;
         text-align: center;
+        border: 2px solid;
+        cursor: pointer;
       }
 
-      .cta-btn:hover {
+      .btn-primary {
+        background: #2c2c2c;
+        color: white;
+        border-color: #2c2c2c;
+      }
+
+      .btn-primary:hover {
         background: #1a1a1a;
+        border-color: #1a1a1a;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(44, 44, 44, 0.3);
+        box-shadow: 0 6px 20px rgba(44, 44, 44, 0.2);
       }
 
-      .cta-btn.secondary {
-        background: transparent;
-        border: 2px solid #2c2c2c;
+      .btn-secondary {
+        background: #ffffff;
+        color: #2c2c2c;
+        border-color: #2c2c2c;
+      }
+
+      .btn-secondary:hover {
+        background: #f8f8f8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(44, 44, 44, 0.1);
+      }
+
+      .help-section {
+        margin-top: 30px;
+        padding: 25px;
+        background: #fafafa;
+        border: 1px solid #e8e8e8;
+        border-radius: 12px;
+      }
+
+      .help-section p {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        color: #333333;
+      }
+
+      .help-section p:first-child {
+        font-weight: 600;
+        margin-bottom: 16px;
         color: #2c2c2c;
       }
 
-      .cta-btn.secondary:hover {
-        background: #2c2c2c;
-        color: white;
+      .help-section a {
+        color: #2c2c2c;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s ease;
+      }
+
+      .help-section a:hover {
+        color: #000000;
+      }
+
+      .footer {
+        background: #fafafa;
+        color: #666666;
+        text-align: center;
+        padding: 20px;
+        border-top: 1px solid #e8e8e8;
+        font-size: 0.9rem;
       }
 
       /* Mobile responsive */
       @media (max-width: 768px) {
-        .cancelled-section h1 {
+        .payment-status {
+          padding: 20px;
+          min-height: calc(100vh - 140px);
+        }
+
+        .status-card {
+          padding: 40px 24px;
+          margin: 0;
+        }
+
+        .status-card h1 {
           font-size: 2rem;
         }
 
-        .actions {
+        .action-buttons {
           flex-direction: column;
           align-items: center;
         }
 
-        .cta-btn {
+        .btn-primary,
+        .btn-secondary {
           width: 100%;
-          max-width: 250px;
+          max-width: 240px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .status-card {
+          padding: 30px 20px;
+        }
+
+        .status-card h1 {
+          font-size: 1.8rem;
+        }
+
+        .status-card p {
+          font-size: 1rem;
+        }
+
+        .cancel-icon {
+          width: 60px;
+          height: 60px;
+        }
+
+        .cancel-icon::before {
+          font-size: 24px;
         }
       }
     </style>
@@ -121,7 +244,7 @@
       <div class="nav-container">
         <div class="logo">
           <a href="index.html">
-            <img src="images/hood-logo.png" alt="HoodRevenge Logo" />
+            <img src="images/hood-logo-black.png" alt="HoodRevenge Logo" />
           </a>
         </div>
         <ul class="nav-links">
@@ -157,13 +280,11 @@
             <p>Need help? Contact us:</p>
             <p>
               Email:
-              <a href="mailto:support@hoodrevenge.co.za"
-                >support@hoodrevenge.co.za</a
-              >
+              <a href="mailto:info@hoodrevenge.co.za">info@hoodrevenge.co.za</a>
             </p>
             <p>
               WhatsApp:
-              <a href="https://wa.me/27123456789">+27 123 456 789</a>
+              <a href="https://wa.me/27123456789">+27 78 468 0610</a>
             </p>
           </div>
         </div>

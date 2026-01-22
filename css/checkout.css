@@ -257,6 +257,9 @@
   letter-spacing: 1px;
 }
 
+.order-summary h4 {
+  text-align: end;
+}
 .checkout-items {
   margin-bottom: 2rem;
 }
