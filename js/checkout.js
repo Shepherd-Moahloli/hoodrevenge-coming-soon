@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function showNotification(message, type = "error", duration = 6000) {
   // Remove existing notification
   const existingNotification = document.querySelector(
-    ".error-notification, .success-notification"
+    ".error-notification, .success-notification",
   );
   if (existingNotification) {
     existingNotification.remove();
@@ -524,7 +524,7 @@ function loadCheckoutData() {
     showNotification(
       "Your cart is empty! Redirecting to cart page...",
       "error",
-      3000
+      3000,
     );
     setTimeout(() => (window.location.href = "cart.html"), 3000);
     return;
@@ -550,8 +550,8 @@ function displayOrderSummary(cart) {
       return `
       <div class="checkout-item" style="display: flex; gap: 15px; margin-bottom: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px;">
         <img src="${image}" alt="${
-        item.name
-      }" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">
+          item.name
+        }" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">
         <div style="flex: 1;">
           <h4 style="margin: 0 0 5px 0; font-size: 16px;">${item.name}</h4>
           <p style="margin: 0; color: #666; font-size: 14px;">Size: ${
@@ -588,7 +588,7 @@ function calculateTotals(cart) {
   // 🔥 UPDATE PayFast button text with correct total
   updateElement(
     "payfast-amount",
-    `Pay Securely with PayFast - R${total.toFixed(2)}`
+    `Pay Securely with PayFast - R${total.toFixed(2)}`,
   );
   updateElement("button-total", `R${total.toFixed(2)}`);
 
@@ -598,7 +598,7 @@ function calculateTotals(cart) {
     "VAT:",
     vat,
     "Total:",
-    total
+    total,
   );
 
   // Store totals globally for PayFast integration
@@ -755,13 +755,13 @@ function initiatePayFastPayment(customerData) {
       vat: totals.vat,
       total: totals.total,
       orderNumber: `HR${Date.now()}`,
-    })
+    }),
   );
 
   showNotification(
     "Redirecting to PayFast secure checkout...",
     "success",
-    3000
+    3000,
   );
 
   createPayFastForm(payFastData);
@@ -889,6 +889,91 @@ function createPayFastForm(data) {
   form.submit();
 }
 
+// 🔥 WORKING PAYFAST CONFIGURATION
+function initializePayFast() {
+  console.log("🔄 Initializing PayFast with corrected config...");
+
+  const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  const totals = calculateOrderTotals(cart);
+
+  // ✅ CORRECTED PAYFAST MERCHANT CREDENTIALS
+  const payfastConfig = {
+    // 🚨 IMPORTANT: Use PayFast's TEST credentials exactly as provided
+    merchant_id: "10000100",
+    merchant_key: "46f0cd694581a",
+
+    // ✅ FIXED TRANSACTION DETAILS
+    amount: totals.total.toFixed(2),
+    item_name: "HoodRevenge Order",
+    item_description: "Premium Streetwear",
+
+    // 🔥 CRITICAL: These URLs must be EXACTLY right
+    return_url: "https://yourdomain.com/payment-success.html", // Replace with your actual domain
+    cancel_url: "https://yourdomain.com/payment-cancelled.html", // Replace with your actual domain
+    notify_url: "https://yourdomain.com/payment-notify.php", // Server-side notification
+
+    // ✅ CUSTOMER DETAILS (REQUIRED)
+    name_first: document.getElementById("firstName")?.value || "Test",
+    name_last: document.getElementById("lastName")?.value || "Customer",
+    email_address: document.getElementById("email")?.value || "test@test.com",
+
+    // ✅ ADDITIONAL REQUIRED FIELDS
+    m_payment_id: Date.now().toString(), // Unique payment ID
+    custom_str1: "hoodrevenge_order",
+    custom_str2: generateOrderId(),
+    custom_str3: "web_order",
+  };
+
+  console.log("💳 PayFast config prepared:", payfastConfig);
+  return payfastConfig;
+}
+
+// 🔥 FIXED FORM SUBMISSION
+function submitPayFastPayment() {
+  console.log("🚀 Submitting to PayFast...");
+
+  try {
+    // Validate form first
+    const email = document.getElementById("email")?.value;
+    const firstName = document.getElementById("firstName")?.value;
+
+    if (!email || !firstName) {
+      alert("Please fill in all required fields before proceeding.");
+      return;
+    }
+
+    const config = initializePayFast();
+
+    // Create form
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "https://sandbox.payfast.co.za/eng/process"; // Sandbox for testing
+    form.target = "_self";
+
+    // Add form fields
+    Object.keys(config).forEach((key) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = config[key];
+      form.appendChild(input);
+    });
+
+    // Submit form
+    document.body.appendChild(form);
+    console.log("📤 Form submitted to PayFast");
+    form.submit();
+
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(form);
+    }, 1000);
+  } catch (error) {
+    console.error("❌ PayFast error:", error);
+    alert("Payment initialization failed. Please refresh and try again.");
+  }
+}
+
 // Helper functions
 function getValue(id) {
   const element = document.getElementById(id);
@@ -905,7 +990,81 @@ function updateCartCount() {
   const count = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const cartElement = document.getElementById("cart-count");
-  if (cartElement) cartElement.textContent = count;
+  if (cartElement) {
+    cartElement.textContent = count;
+    console.log("🔢 Cart count updated:", count);
+  }
 }
 
-console.log("✅ Checkout system ready with professional validation");
+// 🔥 ADD MISSING HELPER FUNCTIONS:
+
+function calculateOrderTotals(cart) {
+  const subtotal = cart.reduce((sum, item) => {
+    const price = item.price || 650;
+    return sum + price * item.quantity;
+  }, 0);
+
+  const vat = subtotal * 0.15; // 15% VAT
+  const shipping = 0; // FREE shipping
+  const total = subtotal + vat + shipping;
+
+  return { subtotal, vat, shipping, total };
+}
+
+function generateOrderId() {
+  return `HR${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+// 🔥 PAYFAST VALIDATION BEFORE SUBMISSION
+function validatePayFastSubmission() {
+  console.log("🔍 Validating PayFast submission...");
+
+  // Check required form fields
+  const requiredFields = ["firstName", "lastName", "email", "phone"];
+  const missingFields = [];
+
+  requiredFields.forEach((fieldId) => {
+    const field = document.getElementById(fieldId);
+    if (!field || !field.value.trim()) {
+      missingFields.push(fieldId);
+    }
+  });
+
+  if (missingFields.length > 0) {
+    alert(`Please fill in the following fields: ${missingFields.join(", ")}`);
+    return false;
+  }
+
+  // Validate email format
+  const email = document.getElementById("email").value;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert("Please enter a valid email address");
+    return false;
+  }
+
+  // Check cart is not empty
+  const cart = JSON.parse(localStorage.getItem("hoodrevenge-cart") || "[]");
+  if (cart.length === 0) {
+    alert("Your cart is empty. Please add items before checking out.");
+    return false;
+  }
+
+  console.log("✅ PayFast validation passed");
+  return true;
+}
+
+// 🔥 UPDATE YOUR PAYFAST BUTTON CLICK HANDLER
+document
+  .getElementById("payfast-checkout-btn")
+  ?.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    console.log("🎯 PayFast button clicked");
+
+    if (validatePayFastSubmission()) {
+      submitPayFastPayment();
+    }
+  });
+
+console.log("✅ Checkout.js fully loaded and ready");

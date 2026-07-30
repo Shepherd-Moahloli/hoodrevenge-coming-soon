@@ -1106,8 +1106,6 @@ body.mobile-menu-open .hamburger-icon span {
   .cart-container,
   .cart-content,
   .cart-main {
-    width: 100% !important;
-    max-width: 100% !important;
     margin: 0 !important;
     padding: 0 15px !important; /* Small padding for screen edge spacing */
   }
@@ -1344,8 +1342,6 @@ body.mobile-menu-open .hamburger-icon span {
   .cart-container,
   .cart-content,
   .cart-main {
-    width: 90% !important; /* NARROWER: 90% instead of 100% */
-    max-width: 90vw !important;
     margin: 0 auto !important;
     box-sizing: border-box !important;
     margin-top: 120px !important; /* FIXED: Push down from navbar */
@@ -1636,8 +1632,6 @@ body.mobile-menu-open .hamburger-icon span {
   .cart-container,
   .cart-content,
   .cart-main {
-    width: 90% !important;
-    max-width: 90vw !important;
     margin: 120px auto 20px auto !important; /* CENTER the entire cart */
     padding: 20px 15px !important;
     box-sizing: border-box !important;
