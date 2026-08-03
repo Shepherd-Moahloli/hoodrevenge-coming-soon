@@ -893,4 +893,51 @@ document.addEventListener("DOMContentLoaded", function () {
   syncHamburgerColor();
 });
 
+// ===== CONSOLIDATED INIT (replaces duplicate scroll/DOMContentLoaded/updateCartCount blocks) =====
+// Close mobile menu when clicking outside + escape key, single scroll handler, initial hamburger sync
+document.addEventListener("DOMContentLoaded", function () {
+  // Mobile overlay outside-click close
+  const mobileMenuOverlay = document.getElementById("mobileMenuOverlay");
+  if (mobileMenuOverlay) {
+    mobileMenuOverlay.addEventListener("click", function (e) {
+      if (e.target === mobileMenuOverlay) {
+        toggleMobileMenu();
+      }
+    });
+  }
+
+  // Close mobile menu on Escape
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      if (mobileMenuOverlay && mobileMenuOverlay.classList.contains("active")) {
+        toggleMobileMenu();
+      }
+    }
+  });
+
+  // Initial UI syncs
+  syncHamburgerColor();
+  updateCartCount(); // safe: uses single canonical updateCartCount defined earlier
+
+  // Single scroll handler that drives navbar + hamburger sync only
+  window.addEventListener("scroll", function () {
+    const navbar = document.querySelector(".navbar");
+    if (!navbar) return;
+    const scrolled = window.pageYOffset || window.scrollY || 0;
+    if (scrolled > 100) {
+      navbar.classList.add("scrolled");
+    } else {
+      navbar.classList.remove("scrolled");
+    }
+    syncHamburgerColor();
+  });
+
+  // Run the scroll handler once on load to set initial state
+  const evt = new Event("scroll");
+  window.dispatchEvent(evt);
+});
+
+// Ensure mobile toggle is accessible globally (already present earlier but keep idempotent)
+window.toggleMobileMenu = window.toggleMobileMenu || toggleMobileMenu;
+
 // ========== END HAMBURGER COLOR SYNC ==========
